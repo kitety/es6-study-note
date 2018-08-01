@@ -229,7 +229,7 @@
   // 1.函数声明语句
   {
     let a = 'secret';
-    function name() {
+    function f() {
       return a;
     }
   }
@@ -245,14 +245,59 @@
   // 不报错
   'use strict'
   if (true) {
-    function name() {
-
-    }
+    function name() { }
   }
   // 报错
   'use strict'
   if (true)
-    function name() {}
+    function name() { }
+
+  /*const命令*/
+  /*const 声明一个只读常量*/
+  const Pi = 3.14;
+  // console.log(Pi);
+  // Pi=1 // error Assignment to constant variable.
+  /*const 常量声明的时候就要初始化*/
+  // const number1 //error Missing initializer in const declaration
+  /*const 跟let类似,只在声明的块级作用域有效*/
+  if (true) {
+    const MAX = 100
+  }
+  // console.log(MAX); // is not defined
+  /*const 生命的变量不提升,暂住在锁死区 声明必须在使用之前*/
+  if (true) {
+    // console.log(MAX); //is not defined
+    const MAX = 120;
+    // console.log(MAX); 
+  }
+  /* const 声明的变量不可以重复声明 */
+  /* const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动,对于简单类型数值字,符串,布尔值值保存的就是指向那个内存地址,保存的就是一个数据指针,指针固定 */
+  const foo={}//这个时候指针指向的是一个地址,这个地址指向一个对象 对象本身可以变化的
+  foo.a=1;
+  foo.b='test'
+  // foo={}// error  Assignment to constant variable. 不能把foo指向新的地址
+  const arr1=[]// arr1是个数组,这个数组科协可写
+  arr1.push('test')
+  arr1.length=0
+  // arr1=[1,2,3]// 赋值新的会报错
+  /* 要想让其不可写 可以使用Object.freeze()方法 */
+  const foo3=Object.freeze();
+  // foo3.a=1;//Assignment to constant variable. 常规模式不起作用,严格模式报错
+  /* 除了可以冻结对象,对象的属性也可以冻结 */
+  var constantise=(o)=>{
+    Object.freeze(o);
+    // 遍历可枚举属性和方法,返回一个数组
+    Object.keys(o).forEach((key,i)=>{
+      if (typeof o[key]==='object') {
+        constantise(o[key])
+      }
+    })
+  }
+
+  /* es6 声明变量的六种方法 */
+
+
+
 </script>
 
 </html>
