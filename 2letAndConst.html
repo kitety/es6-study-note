@@ -121,17 +121,17 @@
   /*块级作用域*/
   //es5只有全局作用域和函数作用域
   /*es5 内层变量可能会覆盖外层变量*/
-  var tmp=new Date()
+  var tmp = new Date()
   function f() {
     console.log(tmp);
     if (true) {
       // 这个地方变量名提升
-      var tmp='hell world'
+      var tmp = 'hell world'
     }
   }
   // f()
   /*es5 计数的循环变量泄露为全局变量*/
-  var s='hello'
+  var s = 'hello'
   for (var i = 0; i < s.length; i++) {
     // console.log(i);
   }
@@ -139,9 +139,120 @@
 
   /*es6 块级作用域*/
   // let实际上是为js新增了块级作用域
-  function name(params) {
-    
+  function f1() {
+    let n = 5;
+    if (true) {
+      let n = 10;
+    }
+    console.log(n); // 5
+    // 内层与外层 如果两个都用var的话就可以输出10
   }
+  // f1()
+  /*es6 允许块级作用域任意嵌套*/
+  { { { { { let a2 = '12345' } } } } }
+  {
+    {
+      {
+        {
+          { let a3 = '12345' }
+          // console.log(a3); // error
+        }
+      }
+    }
+  }
+  /*内层作用域名可以与外层的作用域名一样*/
+  {
+    let a4 = '123'
+    {
+      let a4 = true
+    }
+  }
+  /*块级作用域的出现,使得立即执行函数IIFE没有必要了*/
+  (function () {
+    var temp = 1;
+  }())
+  {
+    let temp = 1;
+  }
+
+  /*块级作用域与函数声明*/
+  /*es5 函数只能在顶层作用域 函数作用域中声明,不能在块级作用域声明*/
+  // if (true) {
+  //   functnio f(){ console.log('1') }
+  // }
+  // try {
+  //   functnio f(){ console.log('1') }
+  // } catch (e) { }
+  // 以上两种在es5都是非法的
+  /*es6 引入了块级作用域 可以声明,而且声明类似于let,在外面不可以使用*/
+  function f() { console.log('i am out!!'); }
+  (function () {
+    if (false) {
+      // 重复声明一次
+      function f() {
+        console.log('i am inner');
+      }
+    }
+    // f() // f is not a function
+    /**
+    注意!!:在es6 理论输出 i am out!!
+    但是浏览器有修改
+      允许在块级作用域内声明函数。
+      函数声明类似于var，即会提升到全局作用域或函数作用域的头部。
+      同时，函数声明还会提升到所在的块级作用域的头部
+    所以,块级作用域声明函数有类似于var声明的变量 
+    */
+  }())
+  //es6 实际效果
+  function f() { console.log('i am out!!'); }
+  (function () {
+    var f = undefined;
+    if (false) {
+      // 重复声明一次
+      function f() {
+        console.log('i am inner');
+      }
+    }
+    // f() //块级作用域声明函数类似var
+  }())
+
+  //如果在es5就是 
+  //变量名提升函数
+  function f() { console.log('I am outside!'); }
+  (function () {
+    function f() { console.log('I am inside!'); }
+    if (false) {
+    }
+    // f();
+  }());
+  /*避免方法*/
+  // 1.函数声明语句
+  {
+    let a = 'secret';
+    function name() {
+      return a;
+    }
+  }
+  //2.函数表达式
+  {
+    let a = 'secret'
+    let f = function () {
+      return a;
+    }
+  }
+  /*es6 块级作用域允许声明函数的规则,只有在使用大括号的情况下成立*/
+
+  // 不报错
+  'use strict'
+  if (true) {
+    function name() {
+
+    }
+  }
+  // 报错
+  'use strict'
+  if (true)
+    function name() {}
 </script>
 
 </html>
