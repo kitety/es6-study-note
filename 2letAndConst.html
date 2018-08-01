@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // let只在{}作用于有效
+  {
+    let a = 12;
+    var b = 34;
+  }
+  // console.log(a,b); //a is not denfined
+
+  // for循环很适合用let
+  var arr=[1,2,3]
+  for (let i = 0; i < arr.length; i++) {
+  }
+  // console.log(i);// error
+  for (var ii = 0; ii < arr.length; ii++) {
+  }
+  //ii 是全局的变量 ii
+  console.log(ii); // 3
+</script>
+
+</html>
