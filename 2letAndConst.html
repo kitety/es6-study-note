@@ -17,17 +17,125 @@
     let a = 12;
     var b = 34;
   }
-  // console.log(a,b); //a is not denfined
+  // console.log(a,b); //a is not defined
 
   // for循环很适合用let
-  var arr=[1,2,3]
+  var arr = [1, 2, 3]
   for (let i = 0; i < arr.length; i++) {
   }
   // console.log(i);// error
   for (var ii = 0; ii < arr.length; ii++) {
   }
-  //ii 是全局的变量 ii
-  console.log(ii); // 3
+  //ii var声明的,全局都是有效的,是全局的变量 ii
+  // console.log(ii); // 3
+
+  /*let声明的只在块级作用域有效*/
+  var a = []
+  for (let i = 0; i < 10; i++) {
+    a[i] = function () {
+      // console.log(i);
+    }
+  }
+  // i是let声明的 只在本轮循环有效 所以每次的i都是新的值.js引擎会记住他的上一次的值
+  a[6]();
+  // for循环的设置循环变量的那里是一个父作用于 循环体是一个单独的子作用域
+  for (let i = 0; i < 3; i++) {
+    let i = 'abc'
+    // console.log(i);
+  }
+  // 'abc'
+  // 'abc'
+  // 'abc'
+
+  /*不存在变量提升*/
+  /* var声明的会发生变量提升,如果在声明前使用就是undefined*/
+  /*let 不存在这种现象,必须在声明之后才可以使用*/
+  // console.log(foo1); //undefined
+  var foo1 = '提升'
+  // console.log(foo2); //foo2 is not defined
+  let foo2 = '不提升'
+
+  /*暂时性死区 TDZ=TEMPORAL DEAD ZONE*/
+  var tmp = 'out-space'
+  if (true) {
+    let tmp;//如果放在下面的位置就会报错
+    tmp = 'inner-space' //is not defined
+    // let tmp;
+    //let声明在这个号定义域绑定了tmp,在声明前调用的因此不服个规则
+  }
+  /*es6规定,使用let/const命令,形成封闭作用域,提前使用都会报错*/
+  if (true) {
+    //tdz begin
+    // tmp='abc' //reference error
+    // console.log(tmp);//reference error
+    let tmp; //tdz 结束
+    // console.log(tmp); //undefined
+    tmp = 123;
+    // console.log(tmp);
+  }
+  //在tdz,关于变量的操作都会变得不安全
+  {
+    // typeof x; // is not defined
+    let x;
+  }
+  /*如果没有定义并不会报错,只会提示undefined*/
+  {
+    // console.log(typeof y);//undefined
+  }
+  /*隐蔽tdz*/
+  //y的声明情况
+  function bar1(x = y, y = 2) {
+    return [x, y]
+  }
+  // bar()
+  //调用bar函数之所以报错（某些实现可能不报错）(bar(2))，是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。如果y的默认值是x，就不会报错，因为此时x已经声明了。
+  function bar2(x = 2, y = x) {
+    //这种就不会报错,因为传递的值已经有了定义
+    return [x, y]
+  }
+  /*另一种案例*/
+  var x2 = x2;
+  // let x3=x3;//x3 在定义之前就是用了 因此未定义
+  /*暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。*/
+
+  /*不允许重复声明*/
+  /*let不允许在相同的作用域内重复声明*/
+  {
+    let a = 1;
+    // var a=1;//Identifier 'a' has already been declared
+  }
+  {
+    let b = 1;
+    // var b = 1;//Identifier 'a' has already been declared
+  }
+  /*不能在函数内部重新声明参数*/
+  function getName1(arg) {
+    let arg; //Identifier 'arg' has already been declared
+  }
+  function getName(arg) {
+    {
+      let arg;//不报错,因为作用域不一样了
+    }
+  }
+
+  /*块级作用域*/
+  //es5只有全局作用域和函数作用域
+  /*es5 内层变量可能会覆盖外层变量*/
+  var tmp=new Date()
+  function f() {
+    console.log(tmp);
+    if (true) {
+      // 这个地方变量名提升
+      var tmp='hell world'
+    }
+  }
+  // f()
+  /*es5 计数的循环变量泄露为全局变量*/
+  var s='hello'
+  for (var i = 0; i < s.length; i++) {
+    // console.log(i);
+  }
+  console.log(i);//循环结束并没有消失,而是泄露成了全局变量
 </script>
 
 </html>
