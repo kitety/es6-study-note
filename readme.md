@@ -13,4 +13,4 @@ npm i liver-server -g
 ```javascript
 live-server
 ```
-这样就可以同步实时修改,一边注释与取消注释,制管理界es6.
+这样就可以同步实时修改,一边注释与取消注释,更加直观理解es6.
