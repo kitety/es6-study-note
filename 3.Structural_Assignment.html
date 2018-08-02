@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>变量的结构赋值</title>
+</head>
+
+<body>
+  <script>
+    /* 数组的结构赋值 */
+    /* 解构 按照一定模式,从数组和对象中提取值,对变量进行赋值  */
+    // let a = 1;
+    // let b = 2;
+    // let c = 3;
+    // 在es6等价于
+    let [a, b, c] = [1, 2, 3]//从数组的对应位置对变量赋值
+    // console.log(a,b,c);//1,2,3
+    /* 本质上,这种写法属于'匹配模式',等号两边模式一样都可以进行赋值 */
+    let [foo, [[bar], baz]] = [1, [[2], 3]]
+    // console.log(foo,bar,baz);//1,2,3
+    let [, , third] = ['foo', 'baz', 'bar']
+    // console.log(third);//'bar'
+    let [x, , y] = [1, 2, 3]
+    // console.log(x,y);
+    let [head, ...tail] = [1, 2, 3, 4, 5, 6]
+    // console.log(head, tail);//1 [2, 3, 4, 5, 6]
+    let [x1, y1, ...z1] = ['a']
+    // console.log(x1, y1, z1);//'a' undefined []
+    // 解构不成功的值 就是undefined
+    let [foo1] = []
+    // console.log(foo1); // undefined
+    let [bar2, foo2] = [1]
+    // console.log(bar2, foo2);//1 undefined
+    /* 另外一种是不完全解构 等号左边的模式只能匹配右边一部分的数组,这种情况下依然可以 */
+    let [x3, y3] = [1, 2, 3]
+    // console.log(x3,y3); // 1 2
+    let [a3, [b3], c3] = [1, [2, 3], 4]
+    // console.log(a3, b3, c3); // 1 2 4
+    /* 严格来说 等号右边的不是数组(严格来说不是可以遍历的解构),将会报错 */
+    // let [foo3]=1// is not Iterable(可迭代)
+    // let [foo4]=false
+    // let [foo5]=NaN
+    // let [foo6]=undefined
+    // let [foo7]=null
+    // let [foo8]={}
+    /* 对于Set解构 也可以使用结解构赋值 */
+    let [x4, y4, z4] = new Set([1, 2, 3])
+    // console.log(x4, y4, z4);
+    /* 事实上,只要某种数据解构Iterator接口,都可以适应数组形式进行结构赋值 */
+    function* fibs() {
+      let a = 0;
+      let b = 1;
+      while (true) {
+        yield a;
+        [a, b] = [b, a + b]
+      }
+    }
+    let [first, second, thrid, fourth, fifth, sixth] = fibs()
+    //fibs是个Generator函数,原生具有Iterator接口
+    // console.log(first, second, thrid, fourth, fifth, sixth);
+
+    /* 默认值 */
+    // 解构赋值允许设定默认值
+    let [foo4 = true] = []
+    // console.log(foo4);// true
+    let [a5, b5 = 'b'] = ['a']
+    // console.log(a5,b5); //'a' 'b'
+    let [a6, b6 = 'b'] = ['a', undefined]
+    // console.log(a5,b5); //'a' 'b'
+    /* es6内部使用严格的相等运算符(===),  严格相等于undefined的时候默认值才会生效*/
+    let [a7 = 1] = [undefined]
+    // console.log(a7); //1
+    let [a8 = 1] = [null]
+    // console.log(a8); //null 一定要undefined才能使用默认值
+    /* 如果默认值是一个表达式,那么这个表达式是惰性求值的,即只有在用到的时候才会求值 */
+    function f(){
+      console.log('111');
+    }
+    // 取得到值就不执行,取不到值,就取默认值,就去执行函数
+    // let [x7=f()]=[undefined]// 打印111
+    let [x8=f()]=[1]//1
+    // 类似于下面的解释
+    let x9;
+    if([1][0]===undefined){
+      x9=f()
+    }else{
+      x9=[1][0]
+    }
+    // console.log(x9); //1
+    /* 默认值可以引用解构赋值的其他变量,但是该变量必须已经声明 */
+    let [q1=1,w1=q1]=[] // 1 1
+    // console.log(q1,w1);
+    let [q2=1,w2=q2]=[2] // 2 2
+    // console.log(q2,w2);
+    let [q3=1,w3=q3]=[1,2] // 1 2
+    // console.log(q3,w3);
+    // let [q4=w4,w4=4]=[] //w4 is not defined w4还没有声明就在使用了
+
+    /* 对象的解构赋值 */
+  </script>
+</body>
+
+</html>
