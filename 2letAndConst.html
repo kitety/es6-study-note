@@ -2,364 +2,364 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
 </head>
 
 <body>
 
 </body>
 <script>
-    // let只在{}作用于有效
+  // let只在{}作用于有效
+  {
+    let a = 12;
+    var b = 34;
+  }
+  // console.log(a,b); //a is not defined
+
+  // for循环很适合用let
+  var arr = [1, 2, 3]
+  for (let i = 0; i < arr.length; i++) {
+  }
+  // console.log(i);// error
+  for (var ii = 0; ii < arr.length; ii++) {
+  }
+  //ii var声明的,全局都是有效的,是全局的变量 ii
+  // console.log(ii); // 3
+
+  /*let声明的只在块级作用域有效*/
+  var a = []
+  for (let i = 0; i < 10; i++) {
+    a[i] = function () {
+      // console.log(i);
+    }
+  }
+  // i是let声明的 只在本轮循环有效 所以每次的i都是新的值.js引擎会记住他的上一次的值
+  a[6]();
+  // for循环的设置循环变量的那里是一个父作用于 循环体是一个单独的子作用域
+  for (let i = 0; i < 3; i++) {
+    let i = 'abc'
+    // console.log(i);
+  }
+  // 'abc'
+  // 'abc'
+  // 'abc'
+
+  /*不存在变量提升*/
+  /* var声明的会发生变量提升,如果在声明前使用就是undefined*/
+  /*let 不存在这种现象,必须在声明之后才可以使用*/
+  // console.log(foo1); //undefined
+  var foo1 = '提升'
+  // console.log(foo2); //foo2 is not defined
+  let foo2 = '不提升'
+
+  /*暂时性死区 TDZ=TEMPORAL DEAD ZONE*/
+  var tmp = 'out-space'
+  if (true) {
+    let tmp;//如果放在下面的位置就会报错
+    tmp = 'inner-space' //is not defined
+    // let tmp;
+    //let声明在这个号定义域绑定了tmp,在声明前调用的因此不服个规则
+  }
+  /*es6规定,使用let/const命令,形成封闭作用域,提前使用都会报错*/
+  if (true) {
+    //tdz begin
+    // tmp='abc' //reference error
+    // console.log(tmp);//reference error
+    let tmp; //tdz 结束
+    // console.log(tmp); //undefined
+    tmp = 123;
+    // console.log(tmp);
+  }
+  //在tdz,关于变量的操作都会变得不安全
+  {
+    // typeof x; // is not defined
+    let x;
+  }
+  /*如果没有定义并不会报错,只会提示undefined*/
+  {
+    // console.log(typeof y);//undefined
+  }
+  /*隐蔽tdz*/
+  //y的声明情况
+  function bar1(x = y, y = 2) {
+    return [x, y]
+  }
+  // bar()
+  //调用bar函数之所以报错（某些实现可能不报错）(bar(2))，是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。如果y的默认值是x，就不会报错，因为此时x已经声明了。
+  function bar2(x = 2, y = x) {
+    //这种就不会报错,因为传递的值已经有了定义
+    return [x, y]
+  }
+  /*另一种案例*/
+  var x2 = x2;
+  // let x3=x3;//x3 在定义之前就是用了 因此未定义
+  /*暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。*/
+
+  /*不允许重复声明*/
+  /*let不允许在相同的作用域内重复声明*/
+  {
+    let a = 1;
+    // var a=1;//Identifier 'a' has already been declared
+  }
+  {
+    let b = 1;
+    // var b = 1;//Identifier 'a' has already been declared
+  }
+  /*不能在函数内部重新声明参数*/
+  function getName1(arg) {
+    let arg; //Identifier 'arg' has already been declared
+  }
+  function getName(arg) {
     {
-        let a = 12;
-        var b = 34;
+      let arg;//不报错,因为作用域不一样了
     }
-    // console.log(a,b); //a is not defined
+  }
 
-    // for循环很适合用let
-    var arr = [1, 2, 3]
-    for (let i = 0; i < arr.length; i++) {
-    }
-    // console.log(i);// error
-    for (var ii = 0; ii < arr.length; ii++) {
-    }
-    //ii var声明的,全局都是有效的,是全局的变量 ii
-    // console.log(ii); // 3
-
-    /*let声明的只在块级作用域有效*/
-    var a = []
-    for (let i = 0; i < 10; i++) {
-        a[i] = function () {
-            // console.log(i);
-        }
-    }
-    // i是let声明的 只在本轮循环有效 所以每次的i都是新的值.js引擎会记住他的上一次的值
-    a[6]();
-    // for循环的设置循环变量的那里是一个父作用于 循环体是一个单独的子作用域
-    for (let i = 0; i < 3; i++) {
-        let i = 'abc'
-        // console.log(i);
-    }
-    // 'abc'
-    // 'abc'
-    // 'abc'
-
-    /*不存在变量提升*/
-    /* var声明的会发生变量提升,如果在声明前使用就是undefined*/
-    /*let 不存在这种现象,必须在声明之后才可以使用*/
-    // console.log(foo1); //undefined
-    var foo1 = '提升'
-    // console.log(foo2); //foo2 is not defined
-    let foo2 = '不提升'
-
-    /*暂时性死区 TDZ=TEMPORAL DEAD ZONE*/
-    var tmp = 'out-space'
+  /*块级作用域*/
+  //es5只有全局作用域和函数作用域
+  /*es5 内层变量可能会覆盖外层变量*/
+  var tmp = new Date()
+  function f() {
+    console.log(tmp);
     if (true) {
-        let tmp;//如果放在下面的位置就会报错
-        tmp = 'inner-space' //is not defined
-        // let tmp;
-        //let声明在这个号定义域绑定了tmp,在声明前调用的因此不服个规则
+      // 这个地方变量名提升
+      var tmp = 'hell world'
     }
-    /*es6规定,使用let/const命令,形成封闭作用域,提前使用都会报错*/
-    if (true) {
-        //tdz begin
-        // tmp='abc' //reference error
-        // console.log(tmp);//reference error
-        let tmp; //tdz 结束
-        // console.log(tmp); //undefined
-        tmp = 123;
-        // console.log(tmp);
-    }
-    //在tdz,关于变量的操作都会变得不安全
-    {
-        // typeof x; // is not defined
-        let x;
-    }
-    /*如果没有定义并不会报错,只会提示undefined*/
-    {
-        // console.log(typeof y);//undefined
-    }
-    /*隐蔽tdz*/
-    //y的声明情况
-    function bar1(x = y, y = 2) {
-        return [x, y]
-    }
-    // bar()
-    //调用bar函数之所以报错（某些实现可能不报错）(bar(2))，是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。如果y的默认值是x，就不会报错，因为此时x已经声明了。
-    function bar2(x = 2, y = x) {
-        //这种就不会报错,因为传递的值已经有了定义
-        return [x, y]
-    }
-    /*另一种案例*/
-    var x2 = x2;
-    // let x3=x3;//x3 在定义之前就是用了 因此未定义
-    /*暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。*/
+  }
+  // f()
+  /*es5 计数的循环变量泄露为全局变量*/
+  var s = 'hello'
+  for (var i = 0; i < s.length; i++) {
+    // console.log(i);
+  }
+  // console.log(i);//循环结束并没有消失,而是泄露成了全局变量
 
-    /*不允许重复声明*/
-    /*let不允许在相同的作用域内重复声明*/
+  /*es6 块级作用域*/
+  // let实际上是为js新增了块级作用域
+  function f1() {
+    let n = 5;
+    if (true) {
+      let n = 10;
+    }
+    console.log(n); // 5
+    // 内层与外层 如果两个都用var的话就可以输出10
+  }
+  // f1()
+  /*es6 允许块级作用域任意嵌套*/
+  { { { { { let a2 = '12345' } } } } }
+  {
     {
-        let a = 1;
-        // var a=1;//Identifier 'a' has already been declared
-    }
-    {
-        let b = 1;
-        // var b = 1;//Identifier 'a' has already been declared
-    }
-    /*不能在函数内部重新声明参数*/
-    function getName1(arg) {
-        let arg; //Identifier 'arg' has already been declared
-    }
-    function getName(arg) {
+      {
         {
-            let arg;//不报错,因为作用域不一样了
+          { let a3 = '12345' }
+          // console.log(a3); // error
         }
+      }
     }
-
-    /*块级作用域*/
-    //es5只有全局作用域和函数作用域
-    /*es5 内层变量可能会覆盖外层变量*/
-    var tmp = new Date()
-    function f() {
-        console.log(tmp);
-        if (true) {
-            // 这个地方变量名提升
-            var tmp = 'hell world'
-        }
-    }
-    // f()
-    /*es5 计数的循环变量泄露为全局变量*/
-    var s = 'hello'
-    for (var i = 0; i < s.length; i++) {
-        // console.log(i);
-    }
-    // console.log(i);//循环结束并没有消失,而是泄露成了全局变量
-
-    /*es6 块级作用域*/
-    // let实际上是为js新增了块级作用域
-    function f1() {
-        let n = 5;
-        if (true) {
-            let n = 10;
-        }
-        console.log(n); // 5
-        // 内层与外层 如果两个都用var的话就可以输出10
-    }
-    // f1()
-    /*es6 允许块级作用域任意嵌套*/
-    { { { { { let a2 = '12345' } } } } }
+  }
+  /*内层作用域名可以与外层的作用域名一样*/
+  {
+    let a4 = '123'
     {
-        {
-            {
-                {
-                    { let a3 = '12345' }
-                    // console.log(a3); // error
-                }
-            }
-        }
+      let a4 = true
     }
-    /*内层作用域名可以与外层的作用域名一样*/
-    {
-        let a4 = '123'
-        {
-            let a4 = true
-        }
-    }
-    /*块级作用域的出现,使得立即执行函数IIFE没有必要了*/
-    (function () {
-        var temp = 1;
-    }())
-    {
-        let temp = 1;
-    }
+  }
+  /*块级作用域的出现,使得立即执行函数IIFE没有必要了*/
+  (function () {
+    var temp = 1;
+  }())
+  {
+    let temp = 1;
+  }
 
-    /*块级作用域与函数声明*/
-    /*es5 函数只能在顶层作用域 函数作用域中声明,不能在块级作用域声明*/
-    // if (true) {
-    //   functnio f(){ console.log('1') }
-    // }
-    // try {
-    //   functnio f(){ console.log('1') }
-    // } catch (e) { }
-    // 以上两种在es5都是非法的
-    /*es6 引入了块级作用域 可以声明,而且声明类似于let,在外面不可以使用*/
-    function f() { console.log('i am out!!'); }
-    (function () {
-        if (false) {
-            // 重复声明一次
-            function f() {
-                console.log('i am inner');
-            }
-        }
-        // f() // f is not a function
-        /**
-        注意!!:在es6 理论输出 i am out!!
-        但是浏览器有修改
-          允许在块级作用域内声明函数。
-          函数声明类似于var，即会提升到全局作用域或函数作用域的头部。
-          同时，函数声明还会提升到所在的块级作用域的头部
-        所以,块级作用域声明函数有类似于var声明的变量 
-        */
-    }())
-    //es6 实际效果
-    function f() { console.log('i am out!!'); }
-    (function () {
-        var f = undefined;
-        if (false) {
-            // 重复声明一次
-            function f() {
-                console.log('i am inner');
-            }
-        }
-        // f() //块级作用域声明函数类似var
-    }())
-
-    //如果在es5就是 
-    //变量名提升函数
-    function f() { console.log('I am outside!'); }
-    (function () {
-        function f() { console.log('I am inside!'); }
-        if (false) {
-        }
-        // f();
-    }());
-    /*避免方法*/
-    // 1.函数声明语句
-    {
-        let a = 'secret';
-        function f() {
-            return a;
-        }
+  /*块级作用域与函数声明*/
+  /*es5 函数只能在顶层作用域 函数作用域中声明,不能在块级作用域声明*/
+  // if (true) {
+  //   functnio f(){ console.log('1') }
+  // }
+  // try {
+  //   functnio f(){ console.log('1') }
+  // } catch (e) { }
+  // 以上两种在es5都是非法的
+  /*es6 引入了块级作用域 可以声明,而且声明类似于let,在外面不可以使用*/
+  function f() { console.log('i am out!!'); }
+  (function () {
+    if (false) {
+      // 重复声明一次
+      function f() {
+        console.log('i am inner');
+      }
     }
-    //2.函数表达式
-    {
-        let a = 'secret'
-        let f = function () {
-            return a;
-        }
-    }
-    /*es6 块级作用域允许声明函数的规则,只有在使用大括号的情况下成立*/
-
-    // 不报错
-    'use strict'
-    if (true) {
-        function name() { }
-    }
-    // 报错
-    'use strict'
-    if (true)
-        function name() { }
-
-    /*const命令*/
-    /*const 声明一个只读常量*/
-    const Pi = 3.14;
-    // console.log(Pi);
-    // Pi=1 // error Assignment to constant variable.
-    /*const 常量声明的时候就要初始化*/
-    // const number1 //error Missing initializer in const declaration
-    /*const 跟let类似,只在声明的块级作用域有效*/
-    if (true) {
-        const MAX = 100
-    }
-    // console.log(MAX); // is not defined
-    /*const 生命的变量不提升,暂住在锁死区 声明必须在使用之前*/
-    if (true) {
-        // console.log(MAX); //is not defined
-        const MAX = 120;
-        // console.log(MAX); 
-    }
-    /* const 声明的变量不可以重复声明 */
-    /* const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动,对于简单类型数值字,符串,布尔值值保存的就是指向那个内存地址,保存的就是一个数据指针,指针固定 */
-    const foo = {}//这个时候指针指向的是一个地址,这个地址指向一个对象 对象本身可以变化的
-    foo.a = 1;
-    foo.b = 'test'
-    // foo={}// error  Assignment to constant variable. 不能把foo指向新的地址
-    const arr1 = []// arr1是个数组,这个数组科协可写
-    arr1.push('test')
-    arr1.length = 0
-    // arr1=[1,2,3]// 赋值新的会报错
-    /* 要想让其不可写 可以使用Object.freeze()方法 */
-    const foo3 = Object.freeze();
-    // foo3.a=1;//Assignment to constant variable. 常规模式不起作用,严格模式报错
-    /* 除了可以冻结对象,对象的属性也可以冻结 */
-    var constantise = (o) => {
-        Object.freeze(o);
-        // 遍历可枚举属性和方法,返回一个数组
-        Object.keys(o).forEach((key, i) => {
-            if (typeof o[key] === 'object') {
-                constantise(o[key])
-            }
-        })
-    }
-
-    /* es6 声明变量的六种方法 */
-    /*
-    1.variable es5
-    2.function es5
-    3.let 
-    4.const
-    5.import
-    6.class
+    // f() // f is not a function
+    /**
+    注意!!:在es6 理论输出 i am out!!
+    但是浏览器有修改
+      允许在块级作用域内声明函数。
+      函数声明类似于var，即会提升到全局作用域或函数作用域的头部。
+      同时，函数声明还会提升到所在的块级作用域的头部
+    所以,块级作用域声明函数有类似于var声明的变量 
     */
-
-    /* 顶层对象的属性 */
-    /* 浏览器=>window node=>global */
-    /* es5 顶层对象的属性和全局变量是等价的 */
-    window.testNumber = 1
-    //   console.log(testNumber);//1
-    testNumber = 2
-    //   console.log(window.testNumber);//2
-    //es6 全局对象 顶层对象逐渐脱离
-    /* var 和function声明的全局变量,具有顶层对象的属性*/
-    /* let const class声明的全局变量,不属于顶层对象的属性*/
-    var testNumber2 = 1
-    // console.log(window.testNumber2);//1
-    let testNumber3 = 3
-        // console.log(window.testNumber3);//undefined 并不是顶层对象的属性
-
-        /* global对象 */
-        //http://es6.ruanyifeng.com/#docs/let#global-对象
-        /*es5 顶层对象不统一 
-        浏览器 window node,web worker没有window
-        浏览器 webworker 的self指向顶层对象,node没有self
-        node的顶层对象是global 其他都不支持
-    
-        */
-        /*  
-            全局:this返回顶层对象,在es6模块和node模块中this返回当前模块
-            函数的this:单纯函数运行:this指向顶层对象,严格模式this返回undefined
-            不管严格模式还是普通模式,new Function('return this')()总是返回全局对象,但是如果浏览器用了csp(content security policy,内容安全策略),那么eval,new Function这些方法都不能使用
-        */
-        //兼容方法
-        // 方法1
-        (typeof window !== 'undefined' ?
-            window
-            : (typeof process === 'object' &&
-                typeof require === 'function' &&
-                typeof global === 'object')
-                ? global
-                : this)
-    // 方法2
-    var getGlobal = function () {
-        if (typeof slef !== 'undefined') { return self }
-        if (typeof window !== 'undefined') { return window }
-        if (typeof global !== 'undefined') { return global }
-        throw new Error('unable to locate global objext')
+  }())
+  //es6 实际效果
+  function f() { console.log('i am out!!'); }
+  (function () {
+    var f = undefined;
+    if (false) {
+      // 重复声明一次
+      function f() {
+        console.log('i am inner');
+      }
     }
-    // 新的提案,在标准语言层面,引入global作为顶层对象.
-    //https://github.com/tc39/proposal-global
-    //垫片库模拟https://github.com/ljharb/System.global
+    // f() //块级作用域声明函数类似var
+  }())
 
-    //在各种环境里保证global对象存在
-    require('system.global/shim')()//commonjs 写法
-    import shim from 'system.global/shim'; shim();// es6 模块写法
-    //将顶层对象放入变量global
-    var global = reuqire('system.global')();//commonjs写法
-    //以下为es6写法
-    import getGlobal from 'system.global'
-    const global = getGlobal()
+  //如果在es5就是 
+  //变量名提升函数
+  function f() { console.log('I am outside!'); }
+  (function () {
+    function f() { console.log('I am inside!'); }
+    if (false) {
+    }
+    // f();
+  }());
+  /*避免方法*/
+  // 1.函数声明语句
+  {
+    let a = 'secret';
+    function f() {
+      return a;
+    }
+  }
+  //2.函数表达式
+  {
+    let a = 'secret'
+    let f = function () {
+      return a;
+    }
+  }
+  /*es6 块级作用域允许声明函数的规则,只有在使用大括号的情况下成立*/
+
+  // 不报错
+  'use strict'
+  if (true) {
+    function name() { }
+  }
+  // 报错
+  'use strict'
+  if (true)
+    function name() { }
+
+  /*const命令*/
+  /*const 声明一个只读常量*/
+  const Pi = 3.14;
+  // console.log(Pi);
+  // Pi=1 // error Assignment to constant variable.
+  /*const 常量声明的时候就要初始化*/
+  // const number1 //error Missing initializer in const declaration
+  /*const 跟let类似,只在声明的块级作用域有效*/
+  if (true) {
+    const MAX = 100
+  }
+  // console.log(MAX); // is not defined
+  /*const 生命的变量不提升,暂住在锁死区 声明必须在使用之前*/
+  if (true) {
+    // console.log(MAX); //is not defined
+    const MAX = 120;
+    // console.log(MAX); 
+  }
+  /* const 声明的变量不可以重复声明 */
+  /* const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动,对于简单类型数值字,符串,布尔值值保存的就是指向那个内存地址,保存的就是一个数据指针,指针固定 */
+  const foo = {}//这个时候指针指向的是一个地址,这个地址指向一个对象 对象本身可以变化的
+  foo.a = 1;
+  foo.b = 'test'
+  // foo={}// error  Assignment to constant variable. 不能把foo指向新的地址
+  const arr1 = []// arr1是个数组,这个数组科协可写
+  arr1.push('test')
+  arr1.length = 0
+  // arr1=[1,2,3]// 赋值新的会报错
+  /* 要想让其不可写 可以使用Object.freeze()方法 */
+  const foo3 = Object.freeze();
+  // foo3.a=1;//Assignment to constant variable. 常规模式不起作用,严格模式报错
+  /* 除了可以冻结对象,对象的属性也可以冻结 */
+  var constantise = (o) => {
+    Object.freeze(o);
+    // 遍历可枚举属性和方法,返回一个数组
+    Object.keys(o).forEach((key, i) => {
+      if (typeof o[key] === 'object') {
+        constantise(o[key])
+      }
+    })
+  }
+
+  /* es6 声明变量的六种方法 */
+  /*
+  1.variable es5
+  2.function es5
+  3.let 
+  4.const
+  5.import
+  6.class
+  */
+
+  /* 顶层对象的属性 */
+  /* 浏览器=>window node=>global */
+  /* es5 顶层对象的属性和全局变量是等价的 */
+  window.testNumber = 1
+  //   console.log(testNumber);//1
+  testNumber = 2
+  //   console.log(window.testNumber);//2
+  //es6 全局对象 顶层对象逐渐脱离
+  /* var 和function声明的全局变量,具有顶层对象的属性*/
+  /* let const class声明的全局变量,不属于顶层对象的属性*/
+  var testNumber2 = 1
+  // console.log(window.testNumber2);//1
+  let testNumber3 = 3
+    // console.log(window.testNumber3);//undefined 并不是顶层对象的属性
+
+    /* global对象 */
+    //http://es6.ruanyifeng.com/#docs/let#global-对象
+    /*es5 顶层对象不统一 
+    浏览器 window node,web worker没有window
+    浏览器 webworker 的self指向顶层对象,node没有self
+    node的顶层对象是global 其他都不支持
+ 
+    */
+    /*  
+        全局:this返回顶层对象,在es6模块和node模块中this返回当前模块
+        函数的this:单纯函数运行:this指向顶层对象,严格模式this返回undefined
+        不管严格模式还是普通模式,new Function('return this')()总是返回全局对象,但是如果浏览器用了csp(content security policy,内容安全策略),那么eval,new Function这些方法都不能使用
+    */
+    //兼容方法
+    // 方法1
+    (typeof window !== 'undefined' ?
+      window
+      : (typeof process === 'object' &&
+        typeof require === 'function' &&
+        typeof global === 'object')
+        ? global
+        : this)
+  // 方法2
+  var getGlobal = function () {
+    if (typeof slef !== 'undefined') { return self }
+    if (typeof window !== 'undefined') { return window }
+    if (typeof global !== 'undefined') { return global }
+    throw new Error('unable to locate global objext')
+  }
+  // 新的提案,在标准语言层面,引入global作为顶层对象.
+  //https://github.com/tc39/proposal-global
+  //垫片库模拟https://github.com/ljharb/System.global
+
+  //在各种环境里保证global对象存在
+  require('system.global/shim')()//commonjs 写法
+  import shim from 'system.global/shim'; shim();// es6 模块写法
+  //将顶层对象放入变量global
+  var global = reuqire('system.global')();//commonjs写法
+  //以下为es6写法
+  import getGlobal from 'system.global'
+  const global = getGlobal()
 
 
 </script>
