@@ -1,13 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>字符串的扩展</title>
+    <title>字符串的扩展
+
+    </title>
 </head>
+
 <body>
     <script>
+        /* 字符的unicode表示法 */
+        {
+            // js允许采用'\uxxxx'的形式表示一个字符,'xxxx'表示unicode的码点
+            // console.log('\u0061'); //a
+            // 但是这种方法只能表达\u0000~\uffff之间的字符,超出范围的必须用两个字符
+            // console.log('\ucb42\udfb7');//쭂�
+            // console.log('\u20bb7');//₻7
+            //如果直接在\u后面跟上超过0xFFFF的数值（比如\u20BB7），JavaScript 会理解成\u20BB+7。由于\u20BB是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
+        }
+        /* es6改进   将码点放入大括号,就能正确解读这个字*/
+        {
+            // console.log('\u{20bb7}');//𠮷
+            // console.log('\u{41}\u{42}');//AB
+            let hello=123
+            // console.log(hell\u{6F});//123
+            // console.log('\u{1F680}'==='\uD83D\uDE80'); //true  大括号表示法与四字节的utf-16编码是等价的
+        }
+        /* javascript一共有六种方法表示一个字符 */
+        {
+            // console.log('\z'==='z');  //true
+            // console.log('\172'==='z');  //true
+            // console.log('\x7a'==='z');  //true
+            // console.log('\u007a'==='z');  //true
+            // console.log('\u{7a}'==='z');  //true
+        }
+
+        /* codePointAt()  能够正确处理4个字节存储的字符,返回一个字符的码点*/
+        //js内部,字符以utf-16存储,每个字符固定2字节,对于应该用4哥字节存储的字符js会认为这个是两个字符
+        {
+            let s='𠮷'
+            console.log(s.length); //2
+            console.log(s.charAt(0));//�
+            console.log(s.charAt(1));//�
+            console.log(s.charCodeAt(0));//55362
+            console.log(s.charCodeAt(1));//57271
+            // 𠮷 编码点 0x20bb7,utf-16为0xdb42 0xdf87,,十进制为 55362 57271,需要四个自己存储,js处理为2的字符串的长度,同事charAt()并不能完全读取整个字符,charCodeAt()只能返回前2个字节和后面2个字节的值
+            let s = '𠮷a'
+            console.log(s.codePointAt(0));//134071
+            console.log(s.codePointAt(1));//57271
+            console.log(s.codePointAt(2));//97
+            //codePointAt()的参数,是字符在字符串的位置
+        }
     </script>
 </body>
+
 </html>
