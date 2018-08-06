@@ -239,8 +239,53 @@
         {
             // let { toString: s } = undefined //typeError
             // let { toString: a } = null //typeError
-
         }
+
+        /* 函数参数的结构赋值 */
+        {
+            function add([x, y]) {
+                return x + y
+            }
+            // console.log(add([1, 2]));
+            // [[1, 2], [3, 4]].map(([a, b]) =>console.log(a + b)); // 3   7
+        }
+        // 函数参数的解构也可以使用默认值
+        {
+            function move({ x = 0, y = 0 } = {}) {
+                // console.log([x, y]);
+            }
+            move({ x: 3, y: 6 }) //[3, 6]
+            move({ x: 3 }) //[3, 0]
+            move({}) //[0, 0]
+            move() //[0, 0]
+        }
+        // 根据上面的例子,下面就会得到不同的结果
+        {
+            function move({ x, y } = { x: 0, y: 0 }) {
+                // 为函数move的参数制定默认值,并不是为x,y制定默认值
+                // console.log([x, y]);
+            }
+            move({ x: 3, y: 6 }) //[3, 6]
+            move({ x: 3 }) //[3, undefiend]
+            move({}) //[undefiend, undefiend]
+            move() //[0, 0]
+        }
+        // 上面的例子,一个是解构 一个是赋值
+        /* undefined就会出发默认的参数值 */
+        {
+            [1,undefined,2].map((x='yes')=>{
+                // console.log(x); //1   yes   2
+            })
+        }
+
+        /* 圆括号问题 */
+        /* ES6 的规则是，只要有可能导致解构的歧义，就不得使用圆括号。 */
+        /*
+        以下三种情况不适用圆括号
+        1.变量声明语句
+        2.函数参数(函数参数也属于变量声明)
+        3.赋值语句的模式
+        */
     </script>
 </body>
 
