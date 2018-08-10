@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>字符串的扩展
-
     </title>
+    <script src="./04-at.js"></script>
 </head>
 
 <body>
@@ -25,7 +25,7 @@
         {
             // console.log('\u{20bb7}');//𠮷
             // console.log('\u{41}\u{42}');//AB
-            let hello=123
+            let hello = 123
             // console.log(hell\u{6F});//123
             // console.log('\u{1F680}'==='\uD83D\uDE80'); //true  大括号表示法与四字节的utf-16编码是等价的
         }
@@ -38,21 +38,109 @@
             // console.log('\u{7a}'==='z');  //true
         }
 
+
         /* codePointAt()  能够正确处理4个字节存储的字符,返回一个字符的码点*/
         //js内部,字符以utf-16存储,每个字符固定2字节,对于应该用4哥字节存储的字符js会认为这个是两个字符
         {
-            let s='𠮷'
-            console.log(s.length); //2
-            console.log(s.charAt(0));//�
-            console.log(s.charAt(1));//�
-            console.log(s.charCodeAt(0));//55362
-            console.log(s.charCodeAt(1));//57271
-            // 𠮷 编码点 0x20bb7,utf-16为0xdb42 0xdf87,,十进制为 55362 57271,需要四个自己存储,js处理为2的字符串的长度,同事charAt()并不能完全读取整个字符,charCodeAt()只能返回前2个字节和后面2个字节的值
-            let s = '𠮷a'
-            console.log(s.codePointAt(0));//134071
-            console.log(s.codePointAt(1));//57271
-            console.log(s.codePointAt(2));//97
+            let s = '𠮷'
+            // console.log(s.length); //2
+            // console.log(s.charAt(0));//�
+            // console.log(s.charAt(1));//�
+            // console.log(s.charCodeAt(0));//55362
+            // console.log(s.charCodeAt(1));//57271
+            // 𠮷 编码点 0x20bb7,utf-16为0xdb42 0xdf87,,十进制为 55362 57271,需要四个字节存储,js处理为2的字符串的长度,同时charAt()并不能完全读取整个字符,charCodeAt()只能返回前2个字节和后面2个字节的值
+            let s1 = '𠮷a'
+            // console.log(s1.codePointAt(0));//134071
+            // console.log(s1.codePointAt(1));//57271
+            // console.log(s1.codePointAt(2));//97
             //codePointAt()的参数,是字符在字符串的位置
+
+            //将'𠮷a' 视为三个字符,codePointAt可以正确的识别,同事在第三个字符上,结果与charCodeAt的结果是一样的
+        }
+        /* codePointAt() 方法返回 一个 Unicode 编码点值的非负整数
+        charAt() 方法从一个字符串中返回指定的字符。
+        charCodeAt()方法返回0到65535之间的整数，表示给定索引处的UTF-16代码单元
+         */
+        /* codePointAt方法会正确返回32位的utf-16字符的码点,对于常规字符,他与charCodeAt的结果一样 */
+        {
+            /* codePointAt返回值是十六进制,可以用toString转换 */
+            let s = '𠮷a'
+            //  console.log(s.codePointAt(0).toString(16));//20bb7
+            //  console.log(s.codePointAt(1).toString(16));//dfb7
+        }
+        /* codePointAt方法是测试一个字符由两个字节还是四个字节组成的最佳方法 */
+        {
+            function is32Bit(c) {
+                return c.codePointAt(0) > 0xffff;
+            }
+            //  console.log(is32Bit('𠮷'));//true
+            //  console.log(is32Bit('a'));//false
+        }
+
+
+        /* String.fromCodePoint */
+        /* es5的String.fromCodePoint,用于从对应的码点返回对应的字符,但是这个方法不能识别32位的utf-16字符(unicode编号大于0xffff)*/
+        {
+            let s = String.fromCharCode(0x20bb7)
+            //  console.log(s);//ஷ
+            //上面的程序中,20bb7的最高位被舍弃,打印的其实是0bb7的结果
+        }
+        /* es6提供了String.fromcodePoint方法,可以识别大于0xffff的字符,弥补了String.fromCharCode方法的不足,正好与codePonitAt相反 */
+        {
+            //  console.log(String.fromCodePoint(0x20bb7));//𠮷
+            //  console.log(String.fromCodePoint(0x78,0x1f680,0x79));//x🚀y
+            //  console.log(String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y');//true
+            //上述程序,如果String.fronCodePoint方法有多个参数,name就会合成一个字符串返回
+        }
+        /* 注意fromCodePoint方法定义在String对象上,而codePointAt定义子啊字符串的实例对象上 */
+
+
+        /*字符串的遍历器接口  */
+        /* es6我字符串添加了遍历器借口,使得字符串可以被for...of循环遍历 */
+        {
+            for (const i of 'object') {
+                //  console.log(i);// o b j e c t 
+            }
+        }
+        /* 同事遍历器可以识别大于0xffff的码点,传统的for循环不饿能够 */
+        {
+            let text = String.fromCodePoint(0x20bb7);
+            //  不能识别0xffff以上
+            for (let i = 0; i < text.length; i++) {
+                const element = text[i];
+                //  console.log(element);//� �
+            }
+            //  能识别0xffff以上
+            for (const i of text) {
+                //  console.log(i);//𠮷
+            }
+        }
+
+
+        
+        /* at() */
+        /* es5-charAt(不能识别0xffff;  es6-at()可以识别大于0xffff的字符 */
+        {
+            // console.log('abc'.charAt(0));// a
+            // console.log('𠮷'.charAt(0));// �
+
+            //下面的代码需要垫片库 https://github.com/es-shims/String.prototype.at/blob/master/at.js
+            // console.log('abc'.at(0));// a
+            // console.log('𠮷'.at(0));// 𠮷
+        }
+
+
+        /* normalize */
+        //欧洲语言带有中银或者强调符号,unicode提供了两种方法,一种是直接提供带有中音的符号,如Ǒ(\u01d1);或者是提供合成符号,原字符和重音符号合成,两个字符合为一个字符,如O（\u004F和ˇ(\u030C)合成Ǒ(\u004F\u030C). 视觉和语义等价,但是js不能识别
+        {
+            // console.log('\u01D1'==='\u004F\u030C'); false
+            // console.log('\u01D1'.length); //1
+            // console.log('\u004F\u030C'.length); //2
+            /* 上面的代码表明了,js将合成字符视为两个字符,导致不相等 */
+        }
+        /* es6提供字符串实例化的narmalize()方法,将不同的表示方法表示为统一的样式,成为unicode正规化 */
+        {
+            // console.log('\u01d1'.normalize()==='\u004f\u030c'.normalize());// true
         }
     </script>
 </body>
