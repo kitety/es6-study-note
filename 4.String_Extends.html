@@ -117,7 +117,7 @@
         }
 
 
-        
+
         /* at() */
         /* es5-charAt(不能识别0xffff;  es6-at()可以识别大于0xffff的字符 */
         {
@@ -141,6 +141,48 @@
         /* es6提供字符串实例化的narmalize()方法,将不同的表示方法表示为统一的样式,成为unicode正规化 */
         {
             // console.log('\u01d1'.normalize()==='\u004f\u030c'.normalize());// true
+        }
+        /* normalize方法可以接受参数来制定法normalize的方式 
+        1.NFC 默认,标准等价合成,返回多个简单字符的合成字符,标准等价指的是视觉和语义的等价
+        2.NFD 标准等价分解,标准等价的前提下,返回合成等价字符串分解的多个简单字符
+        3.NFKC 兼容等价合成,返回合成字符.兼容等价,指的是语义上存在的等价,视觉上不等价.normalize()不能识别中文
+        4.NFKD 兼容等价分解,在兼容等价的条件下,返回合成等价字符串分解的多个简单字符
+        */
+        {
+            //    console.log('\u004f\u030c'.normalize('NFC').length); //1
+            //    console.log('\u004f\u030c'.normalize('NFD').length); //2
+        }
+        /* normalize()方法目前不能识别三个或者三个以上的字符的合成,如果是在这种情况下,还是只能使用正则表达式,同unicode编号取件判断  */
+
+
+
+        /* includes() startsWith() endsWith() */
+        /* 传统上,js的indexOf确定一个字符串是否包含另一个字符串,现在新增加了三个方法:
+        1.includes() 布尔 是否找到了字符串参数
+        2.startsWith() 布尔 表示字符串参数是否在原字符串的头部
+        3.endsWith() 布尔 表示字符串参数是否在原字符串的尾部
+        */
+        {
+            let s = 'hello world!'
+            //   console.log(s.includes('hello')); // true
+            //   console.log(s.startsWith('hello')); // true
+            //   console.log(s.endsWith('d!')); // true
+        }
+        /* 这三个方法都支持第二个参数,表示开始搜索的位置 */
+        /* 如果是endsWith的时候,针对的是前n个字符 */
+        {
+            let s = 'hello world!'
+            // console.log(s.includes('wo',6)); // true
+            // console.log(s.startsWith('hello',6)); // false
+            // console.log(s.endsWith('ll',4)); // true 前面四个字符用ll结尾
+        }
+
+
+        /* repeat() 返回一个字符串,表示将原来的字符串重复n次 */
+        {
+            console.log('x'.repeat(5));//xxxxx
+            console.log('hello'.repeat(2));//hellohello
+            console.log('hello'.repeat(0));//''
         }
     </script>
 </body>
