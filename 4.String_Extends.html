@@ -8,6 +8,7 @@
     <title>字符串的扩展
     </title>
     <script src="./04-at.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -90,7 +91,7 @@
             //  console.log(String.fromCodePoint(0x20bb7));//𠮷
             //  console.log(String.fromCodePoint(0x78,0x1f680,0x79));//x🚀y
             //  console.log(String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y');//true
-            //上述程序,如果String.fronCodePoint方法有多个参数,name就会合成一个字符串返回
+            //上述程序,如果String.fronCodePoint方法有多个参数,那么就会合成一个字符串返回
         }
         /* 注意fromCodePoint方法定义在String对象上,而codePointAt定义子啊字符串的实例对象上 */
 
@@ -180,9 +181,202 @@
 
         /* repeat() 返回一个字符串,表示将原来的字符串重复n次 */
         {
-            console.log('x'.repeat(5));//xxxxx
-            console.log('hello'.repeat(2));//hellohello
-            console.log('hello'.repeat(0));//''
+            // console.log('x'.repeat(5));//xxxxx
+            // console.log('hello'.repeat(2));//hellohello
+            // console.log('hello'.repeat(0));//''
+        }
+        /* 如果是小数的话就会取整 */
+        {
+            // console.log('na'.repeat(3.3));//'nanana'
+        }
+        /* 在0到1之间的小数,就会等同于0 先会进行取整运算,0到-1之间的小数会等同于-0,repeat也视为0 */
+        {
+            // console.log('na'.repeat(0.9));//''
+            /* NaN也等同于0 */
+            // console.log('na'.repeat(NaN));//''
+        }
+        /* 如果repeat()里面的是字符串,那么就会先转换为数字 */
+        {
+            // console.log('na'.repeat('3'));//'nanana'
+            // console.log('na'.repeat('cool'));// ''
+        }
+
+
+        /* padStart()，padEnd() */
+        /* es2017引入了字符串补全长度的功能,字符串长度不都就会补全, padStart为头部补全,padEnd为尾部补全*/
+        {
+            // console.log('x'.padStart(5,'cd'));//cdcdx
+            // console.log('x'.padStart(4,'cd'));//cdcx
+            // console.log('x'.padEnd(5,'cd'));//xcdcd
+            // console.log('x'.padEnd(4,'cd'));//xcdc
+        }
+        /* padStart和padEnd一共接收两个参数,第一个参数用来指定字符串的最小长度 */
+        //如果字符串的长度等于或者大于指定的长度,就返回原来的字符串
+        {
+            // console.log('xxx'.padStart(2,'1'));//xxx
+            // console.log('xxx'.padEnd(2,'1'));//xxx
+        }
+        /* 假如省略第二个参数,默认使用空格补全 */
+        {
+            // console.log('x'.padStart(12));//'           x'
+        }
+        /* padStsrt的常见用途就是为数值补全指定位数 */
+        {
+            // console.log('1'.padStart(10,'0'));//0000000001
+            // console.log('123'.padStart(10,'0'));//0000000123
+            // console.log('123456'.padStart(10,'0'));//0000123456
+        }
+        /* 另一种用途就是提示字符串格式 */
+        {
+            // console.log('12'.padStart(10,'YYYY-MM-DD'));// YYYY-MM-12
+            // console.log('09-12'.padStart(10,'YYYY-MM-DD'));// YYYY-09-12YYYY-MM-12
+        }
+
+
+        /* matchAll() 返回一个正则表达式在当前字符串的所有匹配 */
+
+
+        /* 模板字符串 */
+        {
+            //传统的字符串输出模板 jqueryde的方式
+            let tempStr = 'test value'
+            $('#result').append(
+                'There are <b>' + tempStr + '</b> ' +
+                'items in your basket, ' +
+                '<em>' + tempStr +
+                '</em> are on sale!'
+            )
+            /* es6的模板字符串 */
+            $('#result').append(`
+                There are <b>  ${tempStr}  </b>  +
+                items in your basket,  +
+                <em> ${tempStr} </em> are on sale!
+            `)
+        }
+        /* 字符串模板也是增强型的字符串,用反引号(`)标识,可以当做普通字符串,可以定义多行字符串,或者在字符串中嵌入变量 */
+        {
+            // 普通字符串
+            let s1 = ` I am happy`
+            // 换行
+            let s2 = ` I am happy,
+            you are happy`
+            // 变量
+            let tempValue = 12
+            let s3 = `这个数字是${tempValue}`
+        }
+        /* 在模板字符串中需要使用反引号,就需要转义字符 */
+        {
+            // console.log(`这是一个转义字符\``);//这是一个转义字符`
+        }
+        /* 在模板字符串中标识多行字符串,那么空格和缩进也会保留其中 */
+        {
+            let s1 = `
+            <ul>
+                <li>1</li>
+                <li>2</li>
+            </ul>
+            `
+            // console.log(s1);
+            // < ul >
+            //     <li>1</li>
+            //     <li>2</li>
+            // </ul >
+        }
+        /* 模板字符串的变量需要放在${}中 */
+        {
+            let tempValue = 12
+            let s3 = `这个数字是${tempValue}`
+            // console.log(s3); //这个数字是12
+        }
+        /* 大括号内部可以放任意的js表达式,可以进行运算,以及引用对象属性 */
+        {
+            let x = 1
+            let y = 2
+            // console.log(`${x}+${y}=${x + y}`);//1+2=3
+            // console.log(`${x}+${y*2}=${x + y*2}`);//1+4=5
+            let obj = { x: 1, y: 1 }
+            // console.log(`${obj.x+ obj.y}`);//2
+        }
+        /* 模板字符串之中还能调用函数 */
+        {
+            function fn() { return 'hello' }
+            // console.log(`${fn()}`);//hello
+        }
+        /* 假如大括号中的值不是字符串,将按照一般的规则转换为字符串,比如如果大括号中的值是对象,将会默认调用对象的toString()方法*/
+        //变量没有声明就会报错
+        {
+            // console.log(`${a} is not defined`);// error a is not defined
+        }
+        /* 模板字符串的大括号里面执行js代码,如果是一个字符串,那就会原样输出 */
+        {
+            // console.log(`${'test'}`);//test
+        }
+        /* 模板字符串还可以嵌套 */
+        {
+            let C = 1
+            // console.log(`${`hello${C}`}`);//hello1
+            // 字符串模板又加上字符串模板
+            // 定义一个函数,函数是字符串字符串里面有遍历
+            const temp1 = addrs => `
+                <table>
+                ${addrs.map(addr => `
+                    <tr><td>${addr.first}</td></tr>
+                    <tr><td>${addr.last}</td></tr>
+                `
+                ).join('')}
+                </table>
+            `
+            const data = [
+                { first: '<Jane>', last: 'Bond' },
+                { first: '<Lars>', last: 'Croft' }
+            ]
+            // 调用函数,传递对象
+            // console.log(temp1(data));//结果在下面
+            // <table>
+            //     <tr><td><Jane></td></tr>
+            //     <tr><td>Bond</td></tr>
+            //     <tr><td><Lars></td></tr>
+            //     <tr><td>Croft</td></tr>
+            //  </table>
+        }
+        /* 如果要引用模板字符串本身,在需要的时候执行,可以像下面这样写 */
+        {
+            let str = `return ` + '`hello ${name}`'
+            let func = new Function('name', str);
+            // console.log(func('Jack'));// hello Jack
+
+            let str1 = '(name)=>`hello ${name}!`';
+            let func1 = eval.call(null, str1);
+            // console.log(func1('Jack'));//hello Jack!
+        }
+
+
+        /* 模板编译 */
+        //通过模板编译字符串,生成正式模板的实例
+        {
+            let template = `
+            <ul>
+                <% for(let i=0;i<data.supplies.length;i++){ %>
+                    <li> <%=data.supplies[i] %></li>
+                <% } %>
+            </ul>
+            `
+            //用<%...%>放置js代码,使用<%...%>输出js表达式
+            // 编译
+            echo('<ul>');
+            for (let i = 0; i < data.supplies.length; i++) {
+                echo('<li>')
+                echo(data.supplies[i])
+                echo('</li>')
+            };
+            echo('</ul>');
+
+            // 转换使用正则表达式
+            let evalExpr = /<%=(.+?)%>/g
+            let expr = /<%=([\s\S]+?)%>/g
+            template = template.replace(evalExpr, '`); \n echo($1); \n  echo(`').replace(expr, '`); \n $1 \n echo(`')
+            template = 'echo(`' + template + '`);'
+
         }
     </script>
 </body>
