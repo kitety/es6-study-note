@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>正则的扩展</title>
+</head>
+
+<body>
+    <script>
+        /* 1.RegExp构造函数 */
+        /* es5的RegExp构造函数的参数有两种情况
+        1.参数是字符串.第二个参数表示正则表达式的修饰符(flag)
+        2.参数是一个正则表达式,返回一个原有正则表达式的拷贝 */
+        {
+            //第一种
+            let regex = new RegExp('xyz', 'i')//等价于下面
+            let regex1 = /xyz/i
+            // 第二种
+            let rege = new RegExp(/xyz/i)//等价于下面
+            let rege1 = /xyz/i
+        }
+        // 但是在es5中,不允许此时使用第二个参数添加修饰符,否则会报错
+        {
+            let regex = new RegExp('xyz', 'i')
+            // Uncaught TypeError: Cannot supply flags when constructing one RegExp from another
+            //现在不会报错,因为现在的主流的浏览器已经支持es6了
+        }
+        /* es6中,如果regexp构造函数第一个参数是一个正则对象,那么可以使用第二个参数制定修饰符.而且,返回的正则表达式会忽略原有的正则表达式的修饰符,使用新的修饰符 */
+        {
+            // console.log(new RegExp(/abc/ig,'i').flags);//i  原因 i覆盖了原来的ig
+            // flags属性返回一个字符串，该字符串由当前正则表达式对象的标志组成。
+        }
+
+
+        /* 字符串的正则方法 */
+        /*  字符串对象共有四个方法可以使用正则表达式:match() replace() search() split()*/
+        {
+            //es6中这四个方法,在语言内部全部调用regexp的实例方法,从而做到所有与正则相关的方法,全部定义在regexp对象上
+            /* 
+                String.prototype.match调用RegExp.peototype[Symbol.match]
+                String.prototype.replace调用RegExp.peototype[Symbol.replace]
+                String.prototype.search调用RegExp.peototype[Symbol.search]
+                String.prototype.split调用RegExp.peototype[Symbol.match]
+             */
+        }
+
+
+        /* u修饰符 */
+        /* es6对正则表达式添加了u修饰符,含义为"unicode模式",用来处理\uffff的unicode字符,也就是说,会正确处理四个字节的utf-16编码 */
+        {
+            // 大于 \uffff的unicode字符
+
+            // console.log(/^\uD83D/u.test('\uD83d\uDC2A'));// false
+            // console.log(/^\uD83D/.test('\uD83d\uDC2A')); //true
+
+            //'\uD83d\uDC2A' 是一个4字节的utf-16编码,代表一个字符,es5不支持,会将其视为两个字符,判断为\uD83D开头,进而为true,es6将其视为一个字符,进而false
+        }
+        //一旦加上u修饰字符,,会修改一些表达式的行为
+        /* 
+        1.点字符
+            点字符在正则表达式中表示除了换行符以外的任意字符,对于大于\uffff的码点,点字符不能识别,加上u就可以识别
+        2.unicode字符串表示
+            es6新增{}大括号鼻表示字符串,正则表达式要加u才能识别,否则解读为量词
+        3.量词
+            使用u修饰符后,所有的量词都会正确识别码点大于0xffff的unicode字符
+        4.预定义模式
+            u修饰符也影响到预定义模式,能否正确识别码点大于\uffff的unicode字符
+         */
+        {
+            // 1.点字符
+            let s = '𠮷'
+            // console.log(/^.$/.test(s));//false 不加u会识别为两个字符串,转为false
+            // console.log(/^.$/u.test(s));//true //突破\uffff
+
+            // 2.unicode字符表示法
+            // console.log(/\u{61}/.test('a'));//false
+            // console.log(/\u{61}/u.test('a'));//true
+            // console.log(/\u{20bb7}/u.test('𠮷'));//true
+            //假如不加u,就会以为是61个连续的
+
+            // 3.量词
+            // console.log(/a{2}/.test('aa'));//true
+            // console.log(/a{2}/u.test('aa'));//true
+            // console.log(/𠮷{2}/.test('𠮷𠮷'));//false
+            // console.log(/𠮷{2}/u.test('𠮷𠮷'));//true
+
+            // 4.预定义模式 关键还是能不能识别\uffff
+            // console.log(/^\S$/.test('𠮷'));//false
+            // console.log(/^\S$/u.test('𠮷'));//true
+            // \S 预定义模式,匹配所有的非空白字符,只有加了u修饰符,才能正确匹配码点大于0xffff的unicode字符
+        }
+    </script>
+</body>
+
+</html>
