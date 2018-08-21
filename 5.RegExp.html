@@ -159,8 +159,37 @@
             REGEX.lastIndex = 4
             const match2 = REGEX.exec('xaya')
             // console.log(match2);//null
-
         }
+        /* y修饰符同样遵守lastIndex属性,但是要求必须在lastIndex制定的位置发现匹配 */
+        {
+            const REGEX = /a/y
+            REGEX.lastIndex = 2
+            // 不是粘连,匹配失败
+            // console.log(REGEX.exec('xaya'));//null
+            REGEX.lastIndex = 3
+            // 从3号开始程度排名那个
+            // console.log(REGEX.exec('xaya'));//["a", index: 3, input: "xaya", groups: undefined]
+        }
+        /* exec() 方法在一个指定字符串中执行一个搜索匹配。返回一个结果数组或 null。 */
+        /* 实际上,y修饰符符号隐含了头部匹配的标志^ */
+        {
+            // console.log(/b/y.exec('abx'));//null
+            // console.log(/^b/y.exec('abx'));//null
+            //上述代码不能保证头部匹配, 因此返回null
+        }
+        /* y设计的本意就是让头部匹配的标志^在全局对象中都有效 */
+        /* 字符串对象的replace方法的例子 */
+        {
+            const REGEX=/a/gy
+            // console.log('aaxa'.replace(REGEX,'_'));//__xa
+            //上面的代码因为不是出现在下一次匹配的头部,因此不被替换
+        }
+        /* 单单一个y修饰符对match方法,只能返回第一个匹配,必须g修饰符联用,才能返回全部匹配 */
+        {
+            // console.log('a1a2a3'.match(/a\d/y));//["a1", index: 0, input: "a1a2a3", groups: undefined]
+            // console.log('a1a2a3'.match(/a\d/yg));//["a1", "a2", "a3"]
+        }
+        /* y修饰符的一个应用,是从字符串提取token(次元),y修饰符确保了匹配之间不会有漏掉的字符 */
 
 
     </script>
