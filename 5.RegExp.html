@@ -180,7 +180,7 @@
         /* y设计的本意就是让头部匹配的标志^在全局对象中都有效 */
         /* 字符串对象的replace方法的例子 */
         {
-            const REGEX=/a/gy
+            const REGEX = /a/gy
             // console.log('aaxa'.replace(REGEX,'_'));//__xa
             //上面的代码因为不是出现在下一次匹配的头部,因此不被替换
         }
@@ -188,8 +188,105 @@
         {
             // console.log('a1a2a3'.match(/a\d/y));//["a1", index: 0, input: "a1a2a3", groups: undefined]
             // console.log('a1a2a3'.match(/a\d/yg));//["a1", "a2", "a3"]
+            // console.log('a1a2a3'.match(/a\d/g));//["a1", "a2", "a3"]
         }
-        /* y修饰符的一个应用,是从字符串提取token(次元),y修饰符确保了匹配之间不会有漏掉的字符 */
+        /* y修饰符的一个应用,是从字符串提取token(词元),y修饰符确保了匹配之间不会有漏掉的字符 */
+        {
+            const TOKEN_Y = /\s*(\+|[0-9]+)\s*/y;
+            const TOKEN_G = /\s*(\+|[0-9]+)\s*/g;
+            function tokenize(TOKEN_REGEX, str) {
+                let result = [];
+                let match;
+                while (match = TOKEN_REGEX.exec(str)) {
+                    result.push(match[1])
+                }
+                return result;
+            }
+            // console.log(tokenize(TOKEN_Y, '3+4'));//["3", "+", "4"]
+            // console.log(tokenize(TOKEN_G, '3+4'));//["3", "+", "4"]
+            //出现非法字符情况就不一样了
+            // console.log(tokenize(TOKEN_Y, '3x+4'));//["3"]
+            // console.log(tokenize(TOKEN_G, '3x+4'));//["3", "+", "4"]
+        }
+
+
+        /* 6.RegRxp.prototype.sticky属性 */
+        /* 与y修饰符相匹配,es6的正则实例对象多了sticky属性,表示是否设置了y修饰符 */
+        {
+            let r = /hello\d/y
+            // console.log(r.sticky);//true
+        }
+
+
+        /* 7.RegExp.prototype.flags属性 */
+        /* es6为正则表达式新增了flags属性,会返回正则表达式的修饰符 */
+        {
+            //es5的source属性,返回正则表达式的正文
+            // console.log(/abc/ig.source);//abc
+
+            /* es6的flags属性,返回正则表达式的修饰符 */
+            // console.log(/abc/ig.flags);// gi
+        }
+
+
+        /* s修饰符 doaAll模式 */
+        /* 正则表达式中,点(.)是一个特殊字符,代表任意的单个字符.但是有两个例外,一个是四个字节的UTF-16字符,这个可以用u修饰符解决,另外一个就是行终止符(line terminator character) */
+        /* 
+        行终止符,就是该字符表示一行的终结,包含以下四个:
+        U+00A 换行符(\n)
+        U+00D 回车符(\r)
+        U+2028 行分隔符(line separator)
+        U+2029 段分隔符(paragraph separator)
+         */
+        {
+            // console.log(/foo.bar/.test('foo\nbar'));//false
+            // 因为换行符不匹配,所以返回false
+            // console.log(/foo.bar/.test('foo0bar'));//true
+        }
+        /* 匹配任意的单个字符的变通写法 */
+        {
+            // http://www.runoob.com/regexp/regexp-syntax.html
+            // [^] 在方括号表达式中使用，此时它表示不接受该字符集合
+            // console.log(/foo[^]bar/.test('foo\nbar')); //true
+        }
+        /* es6 引入s修饰符,使得(.)可以匹配任意字符 */
+        {
+            // console.log(/foo.bar/s.test('foo\nbar'));//true
+        }
+        /* 这种方式成为dotAll模式,即点(.)代表一切字符.所以,正则表达式还引入了一个dotAll属性,返回一个布尔值,表示该正则表达式是否处在dotAll模式 */
+        {
+            const re = /foo.bar/s;
+            //另一种写法
+            //const re = new RegExp('foo.bar','s')
+            // console.log(re.test('foo\nbar'));//true
+            // console.log(re.dotAll);//true
+            // console.log(re.flags);//s
+        }
+        /* /s修饰符和多行修饰符/m不冲突,两者一起使用的情况下,(.)匹配所有字符,而^和$匹配每一行的行首和行尾 */
+
+
+        /* 9.后行段艳 */
+        //js正则,只支持先行断言和先行否定断言,不支持后行断言和后行否定断言.es2018引入后行断言.
+        /* 
+        先行断言:
+            x只有在y前面才匹配 => /x(?=y)/
+            只匹配百分好之前的数字 => /\d+(?=%)/
+        先行否定断言:
+            x只有不在y前面才匹配 => /x(?!y)/
+            只匹配不在百分好之前的数字 => /\d+(?!%)/
+         */
+        {
+            //  console.log(/\d+(?=%)/.exec('100% of us ....'));//['100']
+            //  console.log(/\d+(?!%)/.exec('40 of us  ....'));//['40']
+            //  console.log(/\d+(?!%)/.exec('100% of us ....'));//['10']
+            //  console.log(/\d+(?=%)/.exec('40 of us  ....'));//null
+
+            //上面的字符串,互换表达式得到了不同的结果,还有"先行断言"括号中的部分((?=%)),是不计入返回结果的.
+        }
+        /* 
+        '后行断言'正好与'先行断言'相反
+            x只有在y后面才匹配 => /(?<=y)/
+         */
 
 
     </script>
