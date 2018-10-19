@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Promise</title>
+</head>
+
+<body>
+    <script>
+        /* 1.promise的含义
+            promise是一个对象,可以获取异步操作的信息,提供统一的api,各种异步操作都可以用同样的方法处理
+            -1.对象的状态不受到外界的影响
+            -2.一旦状态改变后面将不会再改变,从 pending进行--fulfilled成功--rejected失败 中间的过渡两个状态.状态定了,resolve已经定型.
+         */
+        /* 2.基本用法 */
+        /* resolve函数的作用是，将Promise对象的状态从“未完成”变为“成功”（即从 pending 变为 resolve），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；
+        reject函数的作用是，将Promise对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。 */
+        {
+            const promise = new Promise((resolve, reject) => {
+                // 异步的结果就是传递的参数
+                if (/* 异步操作成功 */1) {
+                    resolve()
+                } else {
+                    reject()
+                }
+            });
+            /* promise实例生成之后,可以用then分别指定resolve和rejected的回调函数 */
+            promise.then(
+                () => {
+                    // success function
+                },
+                () => {
+                    // failed function
+                }
+            )
+        }
+        {
+            function timeout(ms) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(resolve, ms, 'done');
+                })
+            }
+            timeout(0).then((value) => {
+                console.log(value);
+            })
+        }
+        /* promise创建之后会立即执行 */
+        {
+            let promise = new Promise((resolve, reject) => {
+                console.log('Promise');
+                resolve();
+            })
+            promise.then(() => {
+                console.log('resolve');
+            }).then(() => {
+                console.log(222);
+            })
+            // 这里有问题
+            // .then(() => {
+            //     console.log(333);
+            // }).then(() => {
+            //     console.log(333);
+            // }).then(() => {
+            //     console.log(333);
+            // })
+            console.log(1);
+            //Promise
+            //1
+            //resolve
+            //加上前面的done 就是宏微任务的执行顺序
+        }
+        // 异步加载图片
+        {
+            function loadImageSync(url) {
+                return new Promise((resolve, reject) => {
+                    const image = new Image();
+                    image.onload = () => {
+                        resolve(image)
+                    }
+                    image.onerror = () => {
+                        reject(new Error('Counld not load image at' + url))
+                    }
+                    image.src = url;
+                })
+            }
+        }
+        // Promise 实现ajax
+        {
+            const getJSON = function (url) {
+                const promise = new Promise(function (resolve, reject) {
+                    const hangdler = function () {
+                        if (this.readyState !== 4) {
+                            return;
+                        }
+                        if (this.status === 200) {
+                            resolve(this.response)
+                        } else {
+                            reject(new Error(this.statusText))
+                        }
+                    }
+                    const client = new XMLHttpRequest();
+                    client.open('GET', '1简介.md');
+                    client.onreadystatechange = hangdler;
+                    client.responseType = 'text';
+                    client.setRequestHeader('Accept', 'text/plain');
+                    client.send();
+
+                })
+                return promise;
+            }
+            getJSON('/post').then(json => {
+                console.log('Contents' + json);
+            }, err => {
+                console.log('Error' + err);
+            })
+        }
+        // promise也可以作为参数来进行传值
+        {
+            const p1 = new Promise(function (resolve, reject) {
+
+            })
+            const p2 = new Promise(function (resolve, reject) {
+                resolve(p1)
+            })
+        }
+        {
+            const p1 = new Promise(function (resolve, reject) {
+                setTimeout(() => {
+                    reject(new Error('fail'))
+                }, 3000);
+            })
+            const p2 = new Promise(function (resolve, reject) {
+                setTimeout(() => {
+                    resolve(p1)
+                }, 1000);
+            })
+            p2.then(res=>{
+                console.log('res',res);
+            },()=>{
+                console.log('err in then');
+            }).catch(err=>{
+                console.log('err',err);
+            })
+            // catch也可以捕捉错误,但是优先级低于then的优先级
+        }
+
+    </script>
+</body>
+
+</html>
