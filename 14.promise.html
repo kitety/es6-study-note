@@ -186,8 +186,8 @@
             getJSON('1简介.md').then(
                 post => getJSON('1简介.md')
             ).then(
-                comments => console.log('resolved', comments);,
-            err => console.log(err);
+                comments => console.log('resolved', comments),
+                err => console.log(err)
             )
         }
         /* 4.promise.prototype.catch() */
