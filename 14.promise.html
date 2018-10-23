@@ -1,217 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Promise</title>
-</head>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Promise</title>
+	</head>
 
-<body>
-    <script>
-        /* 1.promise的含义
+	<body>
+		<script>
+			// getJSON定义
+			const getJSON = function(url) {
+				const promise = new Promise(function(resolve, reject) {
+					const hangdler = function() {
+						if (this.readyState !== 4) {
+							return;
+						}
+						if (this.status === 200) {
+							resolve(this.response)
+						} else {
+							reject(new Error(this.statusText))
+						}
+					}
+					const client = new XMLHttpRequest();
+					client.open('GET', '1简介.md');
+					client.onreadystatechange = hangdler;
+					client.responseType = 'text';
+					client.setRequestHeader('Accept', 'text/plain');
+					client.send();
+
+				})
+				return promise;
+			}
+			/* 1.promise的含义
             promise是一个对象,可以获取异步操作的信息,提供统一的api,各种异步操作都可以用同样的方法处理
             -1.对象的状态不受到外界的影响
             -2.一旦状态改变后面将不会再改变,从 pending进行--fulfilled成功--rejected失败 中间的过渡两个状态.状态定了,resolve已经定型.
          */
-        /* 2.基本用法 */
-        /* resolve函数的作用是，将Promise对象的状态从“未完成”变为“成功”（即从 pending 变为 resolve），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；
-        reject函数的作用是，将Promise对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。 */
-        {
-            const promise = new Promise((resolve, reject) => {
-                // 异步的结果就是传递的参数
-                if (/* 异步操作成功 */1) {
-                    resolve()
-                } else {
-                    reject()
-                }
-            });
-            /* promise实例生成之后,可以用then分别指定resolve和rejected的回调函数 */
-            promise.then(
-                () => {
-                    // success function
-                },
-                () => {
-                    // failed function
-                }
-            )
-        }
-        {
-            function timeout(ms) {
-                return new Promise((resolve, reject) => {
-                    setTimeout(resolve, ms, 'done');
-                })
-            }
-            timeout(0).then((value) => {
-                console.log(value);
-            })
-        }
-        /* promise创建之后会立即执行 */
-        {
-            let promise = new Promise((resolve, reject) => {
-                console.log('Promise');
-                resolve();
-            })
-            promise.then(() => {
-                console.log('resolve');
-            }).then(() => {
-                console.log(222);
-            })
-            // 这里有问题
-            // .then(() => {
-            //     console.log(333);
-            // }).then(() => {
-            //     console.log(333);
-            // }).then(() => {
-            //     console.log(333);
-            // })
-            console.log(1);
-            //Promise
-            //1
-            //resolve
-            //加上前面的done 就是宏微任务的执行顺序
-        }
-        // 异步加载图片
-        {
-            function loadImageSync(url) {
-                return new Promise((resolve, reject) => {
-                    const image = new Image();
-                    image.onload = () => {
-                        resolve(image)
-                    }
-                    image.onerror = () => {
-                        reject(new Error('Counld not load image at' + url))
-                    }
-                    image.src = url;
-                })
-            }
-        }
-        // Promise 实现ajax
-        {
-            const getJSON = function (url) {
-                const promise = new Promise(function (resolve, reject) {
-                    const hangdler = function () {
-                        if (this.readyState !== 4) {
-                            return;
-                        }
-                        if (this.status === 200) {
-                            resolve(this.response)
-                        } else {
-                            reject(new Error(this.statusText))
-                        }
-                    }
-                    const client = new XMLHttpRequest();
-                    client.open('GET', '1简介.md');
-                    client.onreadystatechange = hangdler;
-                    client.responseType = 'text';
-                    client.setRequestHeader('Accept', 'text/plain');
-                    client.send();
+			/* 2.基本用法 */
+			/* resolve函数的作用是，将Promise对象的状态从“未完成”变为“成功”（即从 pending 变为 resolve），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；
+			reject函数的作用是，将Promise对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。 */
+			{
+				const promise = new Promise((resolve, reject) => {
+					// 异步的结果就是传递的参数
+					if ( /* 异步操作成功 */ 1) {
+						resolve()
+					} else {
+						reject()
+					}
+				});
+				/* promise实例生成之后,可以用then分别指定resolve和rejected的回调函数 */
+				promise.then(
+					() => {
+						// success function
+					},
+					() => {
+						// failed function
+					}
+				)
+			} {
+				function timeout(ms) {
+					return new Promise((resolve, reject) => {
+						setTimeout(resolve, ms, 'done');
+					})
+				}
+				timeout(0).then((value) => {
+					console.log(value);
+				})
+			}
+			/* promise创建之后会立即执行 */
+			{
+				let promise = new Promise((resolve, reject) => {
+					console.log('Promise');
+					resolve();
+				})
+				promise.then(() => {
+					console.log('resolve');
+				}).then(() => {
+					console.log(222);
+				})
+				// 这里有问题
+				// .then(() => {
+				//     console.log(333);
+				// }).then(() => {
+				//     console.log(333);
+				// }).then(() => {
+				//     console.log(333);
+				// })
+				console.log(1);
+				//Promise
+				//1
+				//resolve
+				//加上前面的done 就是宏微任务的执行顺序
+			}
+			// 异步加载图片
+			{
+				function loadImageSync(url) {
+					return new Promise((resolve, reject) => {
+						const image = new Image();
+						image.onload = () => {
+							resolve(image)
+						}
+						image.onerror = () => {
+							reject(new Error('Counld not load image at' + url))
+						}
+						image.src = url;
+					})
+				}
+			}
+			// Promise 实现ajax
+			{
+				const getJSON = function(url) {
+					const promise = new Promise(function(resolve, reject) {
+						const hangdler = function() {
+							if (this.readyState !== 4) {
+								return;
+							}
+							if (this.status === 200) {
+								resolve(this.response)
+							} else {
+								reject(new Error(this.statusText))
+							}
+						}
+						const client = new XMLHttpRequest();
+						client.open('GET', '1简介.md');
+						client.onreadystatechange = hangdler;
+						client.responseType = 'text';
+						client.setRequestHeader('Accept', 'text/plain');
+						client.send();
 
-                })
-                return promise;
-            }
-            getJSON('/post').then(json => {
-                console.log('Contents' + json);
-            }, err => {
-                console.log('Error' + err);
-            })
-        }
-        // promise也可以作为参数来进行传值,传入的参数决定了另一个promise的状态
-        {
-            const p1 = new Promise(function (resolve, reject) {
+					})
+					return promise;
+				}
+				getJSON('/post').then(json => {
+					console.log('Contents' + json);
+				}, err => {
+					console.log('Error' + err);
+				})
+			}
+			// promise也可以作为参数来进行传值,传入的参数决定了另一个promise的状态
+			{
+				const p1 = new Promise(function(resolve, reject) {
 
-            })
-            const p2 = new Promise(function (resolve, reject) {
-                resolve(p1)
-            })
-        }
-        {
-            const p1 = new Promise(function (resolve, reject) {
-                setTimeout(() => {
-                    reject(new Error('fail'))
-                }, 3000);
-            })
-            const p2 = new Promise(function (resolve, reject) {
-                setTimeout(() => {
-                    resolve(p1)
-                }, 1000);
-            })
-            p2.then(res => {
-                console.log('res', res);
-            }).catch(err => {
-                console.log('err', err);
-            })
-            // catch也可以捕捉错误
-            // p1的转台影响了p2的状态
-        }
-        /* 调用resolve或者reject,并不会终结promise的参数函数的执行 */
-        {
-            new Promise((resolve, reject) => {
-                resolve(1);
-                console.log(2);
-            }).then((r) => {
-                console.log(r);
-            })
-            //2
-            //1
-        }
-        /* 主要的函数的内容其实主要是then的回调函数里面的,因此防止意外promise里面最好加上return */
-        {
-            new Promise((resolve, reject) => {
-                return resolve(1)
-                console.log(1);
-            });
-        }
+				})
+				const p2 = new Promise(function(resolve, reject) {
+					resolve(p1)
+				})
+			} {
+				const p1 = new Promise(function(resolve, reject) {
+					setTimeout(() => {
+						reject(new Error('fail'))
+					}, 3000);
+				})
+				const p2 = new Promise(function(resolve, reject) {
+					setTimeout(() => {
+						resolve(p1)
+					}, 1000);
+				})
+				p2.then(res => {
+					console.log('res', res);
+				}).catch(err => {
+					console.log('err', err);
+				})
+				// catch也可以捕捉错误
+				// p1的转台影响了p2的状态
+			}
+			/* 调用resolve或者reject,并不会终结promise的参数函数的执行 */
+			{
+				new Promise((resolve, reject) => {
+					resolve(1);
+					console.log(2);
+				}).then((r) => {
+					console.log(r);
+				})
+				//2
+				//1
+			}
+			/* 主要的函数的内容其实主要是then的回调函数里面的,因此防止意外promise里面最好加上return */
+			{
+				new Promise((resolve, reject) => {
+					return resolve(1)
+					console.log(1);
+				});
+			}
 
-        /* 3.promise.prototype.then() */
-        //promise的then方法返回的还是一个promise的对象,因此可以练市编程
-        {
-            getJSON('1简介.md').then(json => {
-                console.log(json);
-            }).then(() => { })
-            //函数执行完,执行回调,第一个then执行完之后将返回的值作为参数传给第二个then里面的函数
-        }
-        /* 多个的then链式编程,如果里面返回的是一个promise对象,就需要等待该promise的对象发生变化,再调用 */
-        {
-            getJSON('1简介.md').then(post => {
-                // 返回promise对象
-                return getJSON('1简介.md')
-            }).then(function fa(comments) {
-                console.log('resolved', comments);
-            }, function fb(err) {
-                console.log(err);
-            })
-            // 箭头函数
-            getJSON('1简介.md').then(
-                post => getJSON('1简介.md')
-            ).then(
-                comments => console.log('resolved', comments),
-                err => console.log(err)
-            )
-        }
-        /* 4.promise.prototype.catch() */
-        //promise.prototype.catch是then(null,rejection)的别名,发生错误的回调函数
-        //错误来源 主函数里面发生错误 + then里面的resolve函数发生错误
-        {
-            getJSON('1简介.md').then(
-                post => getJSON('1简介.md')
-            ).catch(err => {
-                console.log(err);
-            })
-        }
-        //错误来源 主函数里面发生错误 + then里面的resolve函数发生错误
-        {
-            p = new Promise((resolve, reject) => {
+			/* 3.promise.prototype.then() */
+			//promise的then方法返回的还是一个promise的对象,因此可以练市编程
+			{
 
-            })
+				getJSON('1简介.md').then(json => {
+					console.log(json);
+				}).then(() => {})
+				//函数执行完,执行回调,第一个then执行完之后将返回的值作为参数传给第二个then里面的函数
+			}
+			/* 多个的then链式编程,如果里面返回的是一个promise对象,就需要等待该promise的对象发生变化,再调用 */
+			{
+				getJSON('1简介.md').then(post => {
+					// 返回promise对象
+					return getJSON('1简介.md')
+				}).then(function fa(comments) {
+					console.log('resolved', comments);
+				}, function fb(err) {
+					console.log(err);
+				})
+				// 箭头函数
+				getJSON('1简介.md').then(
+					post => getJSON('1简介.md')
+				).then(
+					comments => console.log('resolved', comments),
+					err => console.log(err)
+				)
+			}
+			/* 4.promise.prototype.catch() */
+			//promise.prototype.catch是then(null,rejection)的别名,发生错误的回调函数
+			//错误来源 主函数里面发生错误 + then里面的resolve函数发生错误
+			{
+				getJSON('1简介.md').then(
+					post => getJSON('1简介.md')
+				).catch(err => {
+					console.log(err);
+				})
+			}
+			//错误来源 主函数里面发生错误 + then里面的resolve函数发生错误
+			{
+				p = new Promise((resolve, reject) => {
 
-            p.then(val => console.log(val)).catch(err => console.log(err))
-            // 等价于
-            p.then(val => console.log(val), err => console.log(err))
-        }
+				})
 
-    </script>
-</body>
+				p.then(val => console.log(val)).catch(err => console.log(err))
+				// 等价于
+				p.then(val => console.log(val), err => console.log(err))
+			}
+			{
+				// 例子
+				const promise=new Promise(function(resolved,reject){
+					throw new Error('err');
+				})
+				promise.catch(function(err){
+					// throw的错误被捕获
+					console.log(err,666);
+				})
+			}
+		</script>
+	</body>
 
 </html>
