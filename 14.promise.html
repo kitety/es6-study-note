@@ -253,14 +253,30 @@
                     reject(error)
                 }
             })
-            promise.catch(error=>{
-                console.log(error,'257 lines');
+            promise.catch(error => {
+                console.log(error, '257 lines');
             })
         }
         {
             // 写法2 
-
+            const promise = new Promise(function (resolve, reject) {
+                reject(new Error('test'));
+            });
+            promise.catch(error => {
+                console.log(error, '266 line');
+            })
         }
+        /* 如果resolve状态已经变为resolved,那么抛出错误是无法改变  */
+        {
+            const promise = new Promise(function (resolve, reject) {
+                resolve('ok')
+                throw new Error('test');
+            });
+            promise.then(e => console.log(e, '275 line')).catch(error => {
+                console.log(error, '266 line');
+            })
+        }
+            /* promise的状态一旦改变,后面都将不会改变 */
     </script>
 </body>
 
