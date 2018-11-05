@@ -276,7 +276,35 @@
                 console.log(error, '266 line');
             })
         }
-            /* promise的状态一旦改变,后面都将不会改变 */
+        /* promise的状态一旦改变,后面都将不会改变 */
+        /* 上述代码中，promise语句在resolve语句之后再抛出错误，不会被捕获，等于没有抛出错误 。promise对象的错误具有"冒泡"性质,会一直向后传递直到被捕获.也就是说,错误总会被下一个catch捕获.*/
+        {
+            getJSON('1简介.md').then(function (post) {
+                return getJSON(post.commentURL);
+            }).then(function (comments) {
+
+            }).catch(function (errors) {
+                //三个promise对象.其中任何一个抛出错误都会被catch捕获
+                console.error(errors)
+            })
+        }
+        /* 一般来说,不要在then中定义reject状态的回调函数,应该是用catch方法 */
+        {
+            // bad
+            promise.then(() => { }, () => { })
+            // good 
+            promise.then(() => { }).catch(() => { })
+        }
+        /* 与传统的try/catch不同,如果没有使用catch指定错误处理的回调函数,promise对象抛出的错误不会传递到外层 */
+        {
+            const someAsyncThing = function () {
+                return new Promoise(function (resolve, reject) {
+                    //下面会报错 因为没有声明
+                    resolve(x + 2)
+                })
+            }
+            someAsyncThing().then()
+        }
     </script>
 </body>
 

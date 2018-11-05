@@ -106,11 +106,12 @@
       <workItem from="1540263584342" duration="44000" />
       <workItem from="1540263629575" duration="1136000" />
       <workItem from="1540557258393" duration="211000" />
+      <workItem from="1541056339096" duration="6000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1391000" />
+    <option name="totallyTimeSpent" value="1397000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-363" y="101" width="1616" height="876" extended-state="0" />
@@ -142,6 +143,13 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/14.promise.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="51" column="12" selection-start-line="51" selection-start-column="12" selection-end-line="51" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/14.promise.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="816">
