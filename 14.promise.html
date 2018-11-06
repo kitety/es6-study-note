@@ -402,15 +402,59 @@
             someAsyncThing().then(function () {
                 return someOtherAsyncThing()
             }).catch(error => {
-                console.log('oh error');
+                // console.log('oh error');
                 y * 5
                 // y 会报错,但是后面有catch 因此不会抛出错误
             }).catch(error => {
-                console.log('carry on');
+                // console.log('carry on');
                 // 这个catch捕获上一个catch的错误
             })
         }
 
+        /*  Promise.prototype.finally()   */
+        /* finally 不管Promise对象最后状态如何 最后都会执行 */
+        {
+            const promise = new Promise((resolve, reject) => {
+            })
+            promise.then(result => { }).catch(error => { }).finally(() => { })
+        }
+        {
+            /* 服务器Promise处理请求,使用finally关掉服务器 */
+            // server.listen(port).then(()=>{}).finally(server.stop)
+        }
+        /* finally方法的回调函数不接受任何的参数,也就无法知道前面的Promise状态是fulfilled还是rejected. finally里面的操作与状态无关 
+            finally本质上是then方法的特例
+        */
+        {
+            const promise = new Promise((resolve, reject) => {
+            })
+            promise.finally(() => { })
+            /* 等价于 */
+            promise.then(result => result).catch(error => { throw error })
+        }
+        /* finally 实现原理 */
+        {
+            Promise.prototype.finally = function (callback) {
+                let P = this.constructor;
+                /* 不管结果怎么样 都会执行回调函数callback */
+                return this.then(
+                    value => P.resolve(callback()).then(() => value),
+                    reason => P.resolve(callback()).then(() => { throw reason })
+                )
+            }
+        }
+        /* finally的返回值是原来的值 */
+        {
+            // resolve 的值是 undefined
+            // Promise.resolve(2).then(() => { }, () => { })
+            // resolve 的值是 2
+            // Promise.resolve(2).finally(() => { })
+            // reject 的值是 undefined
+            // Promise.reject(3).then(() => { }, () => { })
+            // reject 的值是 3
+            // Promise.reject(3).finally(() => { })
+            /* 后面有写看后面,前面有写看前面 */
+        }
     </script>
 </body>
 
