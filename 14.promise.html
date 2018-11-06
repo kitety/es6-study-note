@@ -426,8 +426,7 @@
             finally本质上是then方法的特例
         */
         {
-            const promise = new Promise((resolve, reject) => {
-            })
+            const promise = new Promise((resolve, reject) => { })
             promise.finally(() => { })
             /* 等价于 */
             promise.then(result => result).catch(error => { throw error })
@@ -455,6 +454,45 @@
             // Promise.reject(3).finally(() => { })
             /* 后面有写看后面,前面有写看前面 */
         }
+
+        /* Promise.all() */
+        /* Promise.all 方法用于将多个Promise实例包装成一个新的Promise实例 */
+        {
+            const p1 = new Promise((resolve, reject) => { })
+            const p2 = new Promise((resolve, reject) => { })
+            const p3 = new Promise((resolve, reject) => { })
+            const p = Promise.all([p1, p2, p3])
+        }
+        /* 
+            Promise.all可以接受一个数组,里面是promise实例,如果不是就会执行Promise.resolve方法(Promise.all方法的参数可以不是数组,但是要有Iterator接口.返回的每个成员都是Promise实例)
+            p的状态有两种
+                p1,p2,p3状态都是fulfilled,p的状态才是fulfilled;
+                p1,p2,p3有一个状态是rejected,p的状态就是rejected
+        */
+        {
+            const promises = [2, 3, 5, 7, 11, 13].map(function (id) {
+                return getJSON('/post/' + id + '.json')
+            })
+            Promise.all(promises).then(function (posts) { }).catch(function (err) { })
+            // 六个实例的状态都变成fulfilled才会执行then中的函数,否则执行catch中的函数
+        }
+        {
+            // const databasePromise = connectDatabase();
+
+            // const booksPromise = databasePromise
+            //     .then(findAllBooks);
+
+            // const userPromise = databasePromise
+            //     .then(getCurrentUser);
+
+            // Promise.all([
+            //     booksPromise,
+            //     userPromise
+            // ]).then(([books, user]) => pickTopRecommentations(books, user));
+
+            // 等booksPromise,userPromise这两个的结果都返回了才会执行pickTopRecommentations回调函数
+        }
+        /* 如果作为参数的Promise实例,自己定义了catch方法 */
     </script>
 </body>
 
