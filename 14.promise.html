@@ -492,7 +492,49 @@
 
             // 等booksPromise,userPromise这两个的结果都返回了才会执行pickTopRecommentations回调函数
         }
-        /* 如果作为参数的Promise实例,自己定义了catch方法 */
+        /* 如果作为参数的Promise实例,自己定义了catch方法,如果被rejected,并不会触发Promise.all()的catch方法 */
+        {
+            const p1 = new Promise((resolve, reject) => {
+                resolve('hello')
+            }).then(result => result).catch(e => e)
+            const p2 = new Promise((resolve, reject) => {
+                // throw new Error('报错了')
+            }).then(result => result).catch(e => e)
+            Promise.all([p1, p2]).then(result => console.log(result)).catch(e => console.log(e))
+        }
+        /* 如果没有catch的话就会被Promise.all的catch捕捉 */
+        {
+            const p1 = new Promise((resolve, reject) => {
+                resolve('hello')
+            }).then(result => result).catch(e => e)
+            const p2 = new Promise((resolve, reject) => {
+                // throw new Error('报错了')
+            }).then(result => result)
+            Promise.all([p1, p2]).then(result => console.log(result)).catch(e => console.log(e))
+        }
+
+        /* Promise.case() */
+        /* Promise.race方法试讲多个Promise实例包装成一个Promise实例 */
+        {
+            const p1 = new Promise((resolve, reject) => { })
+            const p2 = new Promise((resolve, reject) => { })
+            const p3 = new Promise((resolve, reject) => { })
+            const p = Promise.race([p1, p2, p3])
+            /* 只要p1,p2,p3中有一个实例率先改变,p的状态就跟着改变.那个率先改变的Promise返回的实例就传给p的回调函数 */
+        }
+        /* 如果传给Promise.race()不是实例,就会先调用Promise.resolve方法,将参数转换为Promise实例 */
+        {
+            /* 例子:如果一段时间没有获得结果,将Promise的状态变为reject,否则是resolve */
+            const p = Promise.race([
+                fetch('耗费时间的请求链接'),
+                new Promise(function (resolve, reject) {
+                    setTimeout(() => {
+                        reject(new Error('request tiemout'))
+                    }, 5000);
+                })
+            ])
+            p.then(()=>{ console.log(1)}).catch(err=>{console.log(err);})
+        }
     </script>
 </body>
 
