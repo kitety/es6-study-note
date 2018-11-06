@@ -67,29 +67,29 @@
                 })
             }
             timeout(0).then((value) => {
-                console.log(value);
+                // console.log(value);
             })
         }
         /* promise创建之后会立即执行 */
         {
             let promise = new Promise((resolve, reject) => {
-                console.log('Promise-76 lines');
+                // console.log('Promise-76 lines');
                 resolve();
             })
             promise.then(() => {
-                console.log('resolve 80 lines');
+                // console.log('resolve 80 lines');
             }).then(() => {
-                console.log(222, ' 82 lines');
+                // console.log(222, ' 82 lines');
             })
             // 这里有问题
             // .then(() => {
-            //     console.log(333);
+            //     // console.log(333);
             // }).then(() => {
-            //     console.log(333);
+            //     // console.log(333);
             // }).then(() => {
-            //     console.log(333);
+            //     // console.log(333);
             // })
-            console.log(1, '92 lines');
+            // console.log(1, '92 lines');
             //Promise
             //1
             //resolve
@@ -135,9 +135,9 @@
                 return promise;
             }
             getJSON('/post').then(json => {
-                console.log('Contents' + json, '138 line');
+                // console.log('Contents' + json, '138 line');
             }, err => {
-                console.log('Error' + err, '140 line');
+                // console.log('Error' + err, '140 line');
             })
         }
         // promise也可以作为参数来进行传值,传入的参数决定了另一个promise的状态
@@ -160,9 +160,9 @@
                 }, 1000);
             })
             p2.then(res => {
-                console.log('res p2 163 line', res);
+                // console.log('res p2 163 line', res);
             }).catch(err => {
-                console.log('err p2 165 line', err);
+                // console.log('err p2 165 line', err);
             })
             // catch也可以捕捉错误
             // p1的状态影响了p2的状态
@@ -171,9 +171,9 @@
         {
             new Promise((resolve, reject) => {
                 resolve(1);
-                console.log(2, '173 line');
+                // console.log(2, '173 line');
             }).then((r) => {
-                console.log(r, '176 line');
+                // console.log(r, '176 line');
             })
             //2
             //1
@@ -182,7 +182,7 @@
         {
             new Promise((resolve, reject) => {
                 return resolve(1)
-                console.log(1);
+                // console.log(1);
             });
         }
 
@@ -191,7 +191,7 @@
         {
 
             getJSON('1简介.md').then(json => {
-                console.log(json, '194 line');
+                // console.log(json, '194 line');
             }).then(() => { })
             //函数执行完,执行回调,第一个then执行完之后将返回的值作为参数传给第二个then里面的函数
         }
@@ -201,16 +201,20 @@
                 // 返回promise对象
                 return getJSON('1简介.md')
             }).then(function fa(comments) {
-                console.log('resolved 204 line', comments);
+                // console.log('resolved 204 line', comments);
             }, function fb(err) {
-                console.log(err);
+                // console.log(err);
             })
             // 箭头函数
             getJSON('1简介.md').then(
                 post => getJSON('1简介.md')
             ).then(
-                comments => console.log('resolved 212 line ', comments),
-                err => console.log(err)
+                comments => {
+                    // console.log('resolved 212 line ', comments)
+                },
+                err => {
+                    // console.log(err)
+                }
             )
         }
         /* 4.promise.prototype.catch() */
@@ -220,7 +224,7 @@
             getJSON('1简介.md').then(
                 post => getJSON('1简介.md')
             ).catch(err => {
-                console.log(err);
+                // console.log(err);
             })
         }
         //错误来源 主函数里面发生错误 + then里面的resolve函数发生错误
@@ -229,9 +233,13 @@
 
             })
 
-            p.then(val => console.log(val)).catch(err => console.log(err))
+            p.then(val => {
+                // console.log(val)).catch(err => // console.log(err)
+            })
             // 等价于
-            p.then(val => console.log(val), err => console.log(err))
+            p.then(val => {
+                // console.log(val), err => // console.log(err)
+            })
         }
         {
             // 例子
@@ -240,7 +248,7 @@
             })
             promise.catch(function (err) {
                 // throw的错误被捕获
-                console.log(err, 666);
+                // console.log(err, 666);
             })
         }
         {
@@ -254,7 +262,7 @@
                 }
             })
             promise.catch(error => {
-                console.log(error, '257 lines');
+                // console.log(error, '257 lines');
             })
         }
         {
@@ -263,7 +271,7 @@
                 reject(new Error('test'));
             });
             promise.catch(error => {
-                console.log(error, '266 line');
+                // console.log(error, '266 line');
             })
         }
         /* 如果resolve状态已经变为resolved,那么抛出错误是无法改变  */
@@ -272,8 +280,10 @@
                 resolve('ok')
                 throw new Error('test');
             });
-            promise.then(e => console.log(e, '275 line')).catch(error => {
-                console.log(error, '266 line');
+            promise.then(e => {
+                // console.log(e, '275 line')
+            }).catch(error => {
+                // console.log(error, '266 line');
             })
         }
         /* promise的状态一旦改变,后面都将不会改变 */
@@ -285,11 +295,14 @@
 
             }).catch(function (errors) {
                 //三个promise对象.其中任何一个抛出错误都会被catch捕获
-                console.error(errors)
+                // console.error(errors)
             })
         }
         /* 一般来说,不要在then中定义reject状态的回调函数,应该是用catch方法 */
         {
+            const promise = new Promise((res, rej) => {
+
+            })
             // bad
             promise.then(() => { }, () => { })
             // good 
@@ -298,12 +311,40 @@
         /* 与传统的try/catch不同,如果没有使用catch指定错误处理的回调函数,promise对象抛出的错误不会传递到外层 */
         {
             const someAsyncThing = function () {
-                return new Promoise(function (resolve, reject) {
+                return new Promise(function (resolve, reject) {
                     //下面会报错 因为没有声明
-                    resolve(x + 2)
+                    // resolve(x + 2)
                 })
             }
-            someAsyncThing().then()
+            someAsyncThing().then(function () {
+                // console.log('everything is great');
+            })
+            setTimeout(() => {
+                // console.log('ok ok');
+            }, 2000);
+            /* 报错 => everything is ok => ok ok */
+        }
+        /* 脚本放在服务器执行 退出码就是0(执行成功) 
+            node有unhandledRejection事件专门捕获reject错误
+        */
+        {
+            // process 服务器的node环境会有
+            // process.on('unhandledRejection',function (err,p) {
+            //     throw err;
+            // })
+        }
+        /* 未来node计划废除unhandledRejection 如果Promise内部有未捕获错误 直接终止程序 进程退出吗不是0*/
+        {
+            const promise = new Promise((resolve, reject) => {
+                resolve('ok')
+                /* 在下个循环抛出错误,在Promise函数体外抛出错误 冒泡到最外层 成了未捕获的错误 */
+                setTimeout(() => {
+                    // throw new Error('test')
+                }, 0);
+            });
+            promise.then(function (value) {
+                // console.log(value);
+            })
         }
     </script>
 </body>
