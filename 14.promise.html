@@ -525,16 +525,96 @@
         /* 如果传给Promise.race()不是实例,就会先调用Promise.resolve方法,将参数转换为Promise实例 */
         {
             /* 例子:如果一段时间没有获得结果,将Promise的状态变为reject,否则是resolve */
-            const p = Promise.race([
-                fetch('耗费时间的请求链接'),
-                new Promise(function (resolve, reject) {
-                    setTimeout(() => {
-                        reject(new Error('request tiemout'))
-                    }, 5000);
-                })
-            ])
-            p.then(()=>{ console.log(1)}).catch(err=>{console.log(err);})
+            // const p = Promise.race([
+            //     fetch('耗费时间的请求链接'),
+            //     new Promise(function (resolve, reject) {
+            //         setTimeout(() => {
+            //             reject(new Error('request tiemout'))
+            //         }, 5000);
+            //     })
+            // ])
+            // p.then(()=>{ console.log(1)}).catch(err=>{console.log(err);})
         }
+
+        /* Promise.resolve */
+        /* Promise.resolve将现有对象转换为Promise对象 */
+        {
+            // const jsPromise=Promise.resolve($.ajax('/whatever.json'));
+            // 上述代码将jquery生成的deferred对象转为promise对象
+        }
+        /* 等价写法 */
+        {
+            Promise.resolve('foo')
+            new Promise(resolve => resolve('foo'))
+        }
+        /* Promise.resolve方法的参数分成四种情况
+            1.参数是Promise实例,就不做任何修改
+            2.参数是一个thenable对象
+            3.参数不是具有then方法的对象,或者不是对象
+            4.不带有任何参数
+         */
+        /* 参数是一个thenable对象 */
+        {
+            //  有then方法的对象
+            let thenable = {
+                then: function (resolve, reject) {
+                    //  console.log('立即执行');
+                    resolve(42)
+                }
+            }
+            //  promise.resolve将这个对象转换为Promise对象,立即执行thenable中的then方法
+            let p1 = Promise.resolve(thenable)
+            // p1.then(res=>console.log(res))
+        }
+        /* 3.参数不是具有then方法的对象,或者根本就不是对象 */
+        {
+            //  参数为原始值,或者没有then方法的对象,则Promise.resolve方法返回一个新的Promise对象,状态为resolved
+            const p = Promise.resolve('hello')
+            // p.then(res=>console.log(res))
+        }
+        /* 4.不带有任何参数 */
+        {
+            //  Promise.resolve方法允许调用不带参数,直接返回resolved的Promise对象
+            // 调用Promise.resolve直接得到promise对象
+            const p = Promise.resolve();
+            // p.then(()=>{console.log('直接执行resolve')})
+
+        }
+        /* 注意:立即resolve的promise对象,实在本轮事件循环event loop结束时,而不是下一轮事件循环的开始*/
+        {
+            //  一个异步
+            setTimeout(() => {
+                // console.log(3)
+            }, 0);
+            //  本轮事件的结束
+            Promise.resolve().then(function () {
+                // console.log(2)
+            })
+            // 正常
+            // console.log(1)
+        }
+        /* 9.Promise.reject() */
+        /* Promise.reject(reason) 方法返回一个新的Promise实例,该实例的状态为reject */
+        {
+            // const p1 = Promise.reject('出错了')
+            //  等同于
+            // const p = new Promise((resolve, reject) => { reject('出错了') })
+            // p.then(null, s => { console.log(s) })
+            /*上面代码生成了一个Promise对象的实例方法,状态为reject,回调函数立即执行 */
+        }
+        /* Promise.reject()方法的参数会原封不动地作为reject的理由,变成后续方法的参数 */
+        {
+            const thenable = {
+                then(resolve, reject) {
+                    reject('出错了')
+                }
+            }
+            Promise.reject(thenable).catch(e => console.log(e === thenable))
+            /* Promise.reject()方法的参数是一个thenable对象,后面的catch接收到的参数就是这个对象,就是 Promise.reject()括号中的内容 */
+        }
+
+        /*10.应用  */
+
     </script>
 </body>
 
