@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Generator 函数的语法</title>
+</head>
+
+<body>
+    <script>
+        /* 1.简介 */
+        /* Generator函数的语法和API
+            语法理解:Generator函数是一个状态机,封装了多个内部状态
+            执行generator返回一个遍历器对象.generator函数除了状态机,还是一个遍历器对象生成函数.返回的遍历器对象,可以依次遍历generator函数的每一个状态
+         */
+        /* 形式上generator函数是一个普通函数,两个特征:
+           1.function关键字与函数名之间有个*号
+           2.函数体内部使用yield表达式,定义不同的内部状态.yield的意思就是产出.
+         */
+        {
+            function* helloWorldGenerator() {
+                yield 'hello'
+                yield 'world'
+                return 'ending'
+            }
+            var hw = helloWorldGenerator()
+            /* generator函数调用之后不执行,返回的也不是函数的运行结果,而是指向内部状态的指针对象,也就是遍历器对象(Iterator Object) */
+            /* 下一步,必须调用遍历器对象的next方法,让指针指向下一个状态 
+                每次调用next方法,内部指针就从头部函数或上一次停下来的地方开始执行,知道遇到下一个yield或者return语句   
+            */
+            /* Generator函数是分段执行,yield是暂停执行的标志,next方法可以恢复执行 */
+            // console.log(hw.next())
+            // {value: "hello", done: false}
+
+            // console.log(hw.next())
+            //{ value: "world", done: false }
+
+            // console.log(hw.next())
+            //{ value: "ending", done: true }
+            //在第三次执行,next方法返回的对象的value属性,紧跟着return语句后面表达式的值(如果没有return语句,则value属性值Wieundefined),done属性为true,表示结束
+
+            // console.log(hw.next())
+            //{ value: undefined, done: true }
+
+            /* 从上往下依次执行,每次next都执行一次,value就是当前yield的值,done就是遍历是否执行完成 */
+        }
+        /* generator函数就返回一个遍历器的对象,代表generator函数的内部指针.每次调用next方法,就会有个有着value和done两个属性的对象返回
+            value:当前内部状态的值 yield/return表达式的值
+            done:表里是否结束
+         */
+        {
+            /* 声明方式 */
+            function* foo1() { }
+            function* foo2() { }
+            function* foo3() { }
+            function* foo4() { }
+            /* es6没有规定,因此上面四种方式都可以通过 */
+        }
+
+        /* yield表达式 */
+        //  generator函数返回的是遍历器对象,调用next方法才会遍历下一个内部状态,提供了可以暂停执行的函数,yield就是暂停的标志
+        /* next的运行逻辑
+            遇到yield,暂停操作,返回yield后面的值
+            下次调用next,再继续往下执行,直到遇到下一个yield
+            如果没有遇到新的yield,一直运行到函数结束,直到return语句,并且返回return后面表达式的值 
+            如果该函数没有return语句,则返回对象的value为undefined        
+         */
+        /* yield后面值只有调用next才会执行,js是惰性求值(Lazy Evaluation) */
+        {
+            function* gen() {
+                yield 123 + 456
+            }
+            let g = gen()
+            console.log(g.next())// 579 false
+            console.log(g.next())// undefined true
+        }
+        /* yield和return
+            相同:返回紧跟着后面的表达式的值
+            区别:yield有记忆功能,函数暂停或运行,下次再从该位置继续往后执行
+                return没有记忆功能,只能执行一次return,而可以多次执行yield.
+            
+            generator可以通过yield返回一系列的值,generator--生成器
+         */
+
+
+    </script>
+</body>
+
+</html>
