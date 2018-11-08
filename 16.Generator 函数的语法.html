@@ -73,8 +73,8 @@
                 yield 123 + 456
             }
             let g = gen()
-            console.log(g.next())// 579 false
-            console.log(g.next())// undefined true
+            // console.log(g.next())// 579 false
+            // console.log(g.next())// undefined true
         }
         /* yield和return
             相同:返回紧跟着后面的表达式的值
@@ -83,7 +83,137 @@
             
             generator可以通过yield返回一系列的值,generator--生成器
          */
+        /* Generator函数不用yield表大四,成了暂缓执行函数 */
+        {
+            function* f() {
+                console.log('执行了')
+            }
+            let g = f()
+            setTimeout(() => {
+                // g.next()
+                // 成了暂缓函数
+            }, 2000);
+        }
+        /* 同时 yield表达式只能用在generator函数里面,否则报错 */
+        {
+            (function () {
+                // yield 1
+                // error
+            })();
+        }
+        /* 另一种例子 */
+        {
+            var arr = [1, 2, 3, 4, [8, 9]];
+            var flat = function* (a) {
+                a.forEach(item => {
+                    if (typeof item !== 'number') {
+                        // yield * flat(item)
+                    } else {
+                        // yield item
+                        // 报错 forEach方法的参数是一个普通函数,里面不能放yield
+                    }
+                })
+            }
+            for (var f of flat(arr)) {
+                console.log(f)
+            }
+        }
+        /* 修改后的方法  改用for循环 */
+        {
+            var arr = [1, 2, 3, 4, [8, 9]];
+            var flat = function* (a) {
+                for (let i = 0; i < a.length; i++) {
+                    const element = a[i];
+                    if (typeof element !== 'number') {
+                        yield* flat(element)
+                    } else {
+                        yield element
+                    }
+                }
+            }
+            for (var f of flat(arr)) {
+                // console.log(f) //1 2 3 4 8 9
+            }
+        }
+        /* 如果yield表达式用在另一个表达式,就需要放在圆括号里面 */
+        {
+            function* demo() {
+                // console.log(1+ yield) //error 
+                // console.log(1+ yield 1) /error
+                // console.log(1+ (yield))
+                // console.log(1+ (yield 1))
+            }
+            demo()
+        }
+        /* yield表达式用作函数参数放在赋值表达式右边,可以不加括号 */
+        {
+            const foo = () => { }
+            function* demo() {
+                foo(yield 'a', yield 'b');
+                let input = yield
+            }
+        }
 
+        /* 与ITterator 接口的关系 */
+        /* 任意一个对象的Symbol.literator方法,等于该对象的遍历器生成函数,
+        调用该函数会返回该对象的遍历器对象
+            由于Generator函数就是遍历器生成函数,因此可以把generator赋值给对象的symbol.iterator属性,从而使得该对象具有iterator接口
+         */
+        {
+            var myIterator = {};
+            myIterator[Symbol.iterator] = function* () {
+                yield 1;
+                yield 2;
+                yield 3;
+            }
+            // console.log([...myIterator]) // [1,2,3]
+            /* generator函数赋值给 Symbol.iterator,从而使得myIterator对象有了Iterator接口,可以被...遍历*/
+        }
+        /* generator函数执行之后,返回一个遍历器的对象,该对象本身也具有Symbol.iterator属性,执行之后返回自身 */
+        {
+            function* gen() {
+                yield 1
+            }
+            var g = gen();
+            // 执行之后返回自身
+            // console.log(g[Symbol.iterator]() === g)
+            /* gen是一个Generator函数,调用会生成一个遍历器对象g,g的Symbol.iterator属性也是一个遍历器对象生成函数,执行之后返回自己 */
+        }
+
+        /* next方法的参数 */
+        /* yield表达式本身没有返回值,或者总是返回undefined.next方法可以带一个参数,该参数会被当做上一个yield表达式的返回值  类似于python生成器的__send__()函数 */
+        {
+            function* f() {
+                for (var i = 0; 1; i++) {
+                    var reset = yield i;
+                    if (reset) {
+                        i = -1;
+                        return
+                    }
+                }
+            }
+            var g = f();
+            /* 如果没有return语句,一直在for循环循环  那个0是-1加1的加过 */
+            // console.log(g.next())//{value: 0, done: false}
+            // console.log(g.next())//{value: 1, done: false}
+            // console.log(g.next())//{value: 2, done: false}
+            // console.log(g.next(true))//{value: 0, done: false}
+            // console.log(g.next(true))//{value: 0, done: false}
+            // console.log(g.next(true))//{value: 0, done: false}
+
+            /* 如果有return语句,一直在for循环循环  undefined是没有任何返回值的结果 */
+            console.log(g.next())//{value: 0, done: false}
+            console.log(g.next())//{value: 1, done: false}
+            console.log(g.next())//{value: 2, done: false}
+            console.log(g.next(true))//{value: undefined, done: false}
+            console.log(g.next(true))//{value: undefined, done: false}
+            console.log(g.next(true))//{value: undefined, done: false}
+
+            /* 这个功能很有语法意义,generator函数从暂停状态到恢复运行,它的上下文状态(context)是不变的.
+            通过next方法的参数,就有办法在generator函数的开始运行之后继续向函数体内部注入值.也就是说,可以在generator
+            */
+
+        }
 
     </script>
 </body>
