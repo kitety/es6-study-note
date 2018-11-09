@@ -347,7 +347,7 @@
             /* array.from */
             // console.log(Array.from(numbers())) //[1,2]
             /* 解构赋值 */
-            let [x,y]=numbers()
+            let [x, y] = numbers()
             // console.log(x,y) // 1 2
             /* for of */
             for (const n of numbers()) {
@@ -357,6 +357,157 @@
 
 
         /* Generator.prototype.throw() */
+        /* generator函数返回的是遍历器对象,都有一个throw方法.可以在函数体外抛出错误,然后generator函数体内捕获 */
+        {
+            var g = function* () {
+                try {
+                    yield
+                } catch (e) {
+                    console.log('内部捕获', e)
+                }
+            }
+            var i = g()
+            i.next()
+            try {
+                // i.throw(1) // 内部捕获 1
+                // i.throw(2) 
+            } catch (e) {
+                console.log('外部捕获', e)// 外部捕获 2
+            }
+            /* 第一个内部捕获是throw 1 的时候内部的捕获,第二个throw,因为generator函数内部的catch已经执行过了,不会再捕捉错误了 因此被函数体外的catch捕获 */
+        }
+        {
+            /* throw方法可以接受一个参数,该参数会被catch语句接收,建议抛出error实例 */
+            var g = function* () {
+                try {
+                    yield
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+            var i = g()
+            i.next()
+            // i.throw(new Error('出错了'))
+        }
+        /* 不要混淆遍历器对象的throw方法和全局的throw命令. 用遍历器对象的throw方法,而不是用全局的throw命令,因为全局的只能被函数体外的catch捕获*/
+        {
+            var g = function* () {
+                try {
+                    yield
+                } catch (e) {
+                    if (e != 'a') throw e;
+                    console.log('内部捕获', e);
+                }
+            }
+            var i = g()
+            i.next()
+            try {
+                throw new Error('a')
+                throw new Error('b')
+            } catch (error) {
+                // console.log('外部捕获', error)// 外部捕获
+            }
+        }
+        /* throw方法抛出的错误要被内部捕获,前提是至少执行过一次next */
+        {
+            var g = function* () {
+                try {
+                    yield
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+            var i = g()
+            // i.throw(1) // Uncaught 1
+            /* 没有next,generator函数还没有开始执行,这是throw的方法跑错只可能在函数外部 */
+        }
+        /* throw方法调用会附带执行吓一条yield表达式,就是会执行一次next方法 */
+        {
+            var g = function* () {
+                try {
+                    yield console.log('a')
+                } catch (error) {
+                    console.error(error)
+                }
+                yield console.log('b')
+                yield console.log('c')
+            }
+            var g = g()
+            // g.next() //a 
+            // g.throw(1) // 1 b
+            // g.next() //c
+            /* 只要Generator函数内部部署了trycatch代码块,遍历器的throw方法抛出错误,并不影响下一次遍历 */
+        }
+        /* throw 和g.throw是无关的 */
+        {
+            var g = function* () {
+                // yield console.log('hello')
+                // yield console.log('world')
+            }
+            var g = g()
+            g.next();
+            try {
+                throw 1
+            } catch (error) {
+                g.next()
+            }
+            // hello
+            // world
+        }
+        /* 多个yield表达式,可以只用一个trycatch代码来捕获.如果使用回调函数就要为每个函数内部写一个错误处理程序,现在在generator内部写一个trycatch */
+
+        /* generator函数体外抛出的错误可以在函数体内部捕获,反过来,generator函数体内抛出的错误,也可以被函数体外的catch捕获 */
+        {
+            function* foo() {
+                var x = yield 3;
+                var y = x.toUpperCase()
+                yield y
+            }
+            var it = foo()
+            it.next() // 3 false
+            try {
+                it.next(1)
+            } catch (error) {
+                // console.log(error)
+                //TypeError: x.toUpperCase is not a function
+            }
+        }
+        /* 如果generator过程中跑出了错误,并且没有被内部捕获,就不会再执行下去了.如果此后还调用next方法,将返回一个 {value:undefined,done:true}.js引擎默认认为generator已经结束 */
+        {
+            function* g() {
+                yield 1
+                console.log('throw an exception')
+                throw new Error('generator broke')
+                yield 2
+                yield 3
+
+            }
+            function log(generator) {
+                var v;
+                console.log('starting generator') //starting generator
+                try {
+                    v = generator.next()
+                    console.log('第1次运行next方法', v)//{value: 1, done: false}
+                } catch (error) {
+                    console.log('捕捉错误', v)
+                }
+                try {
+                    v = generator.next() //starting generator ->抛出错误
+                    console.log('第2次运行next方法', v)
+                } catch (error) {
+                    console.log('捕捉错误', v)// 捕捉错误 {value: 1, done: false}
+                }
+                try {
+                    v = generator.next()
+                    console.log('第3次运行next方法', v)//第3次运行next方法 {value: undefined, done: true}
+                } catch (error) {
+                    console.log('捕捉错误', v)
+                }
+                console.log('caller done')// caller done
+            }
+            // log(g())
+            /* 执行三次next方法,第二次抛出错误,返回undefined true.结束generator */
+        }
 
     </script>
 </body>
