@@ -188,7 +188,7 @@
                     var reset = yield i;
                     if (reset) {
                         i = -1;
-                        return
+                        // return
                     }
                 }
             }
@@ -202,18 +202,161 @@
             // console.log(g.next(true))//{value: 0, done: false}
 
             /* 如果有return语句,一直在for循环循环  undefined是没有任何返回值的结果 */
-            console.log(g.next())//{value: 0, done: false}
-            console.log(g.next())//{value: 1, done: false}
-            console.log(g.next())//{value: 2, done: false}
-            console.log(g.next(true))//{value: undefined, done: false}
-            console.log(g.next(true))//{value: undefined, done: false}
-            console.log(g.next(true))//{value: undefined, done: false}
+            // console.log(g.next())//{value: 0, done: false}
+            // console.log(g.next())//{value: 1, done: false}
+            // console.log(g.next())//{value: 2, done: false}
+            // console.log(g.next(true))//{value: undefined, done: false}
+            // console.log(g.next(true))//{value: undefined, done: false}
+            // console.log(g.next(true))//{value: undefined, done: false}
 
             /* 这个功能很有语法意义,generator函数从暂停状态到恢复运行,它的上下文状态(context)是不变的.
             通过next方法的参数,就有办法在generator函数的开始运行之后继续向函数体内部注入值.也就是说,可以在generator
             */
-
         }
+        {
+            function* foo(x) {
+                var y = 2 * (yield (x + 1))
+                var z = yield (y / 3)
+                return (x + y + z)
+            }
+            var a = foo(5)
+            // console.log(a.next()) // 6 false
+            // console.log(a.next()) // NaN false
+            // console.log(a.next()) // NaN false
+            var b = foo(5)
+            // console.log(b.next()) // 6 false
+            // console.log(b.next(12)) // 8 false  --2*12/3
+            // console.log(b.next(13)) // 42 false --5+2*12+13
+        }
+        /* 第一个next传参是无效的,v8会自动忽略,从第二个开始才是有效的 */
+        {
+            function* dataConsumer() {
+                // console.log('started'); //start
+                // console.log(`1.${yield}`) // 1.a
+                // console.log(`2.${yield}`) // 2.b
+                return 'result'
+            }
+            let genObj = dataConsumer();
+            // console.log(genObj.next()) //{value: undefined, done: false}
+            // console.log(genObj.next('a')) //{value: undefined, done: false}
+            // console.log(genObj.next('b')) //{value: "result", done: true}
+            // 在yield要暂停一下,要看yield有没有值
+        }
+        /* 如果想要在第一次调用next方法时就可以输入值,可以在generator函数外面包一层 */
+        {
+            function wrapper(generatorFunction) {
+                return function (...args) {
+                    let generatorObject = generatorFunction(...args);
+                    // 相当于先走一步next,下一次next的时候就可以赋值了
+                    generatorObject.next();
+                    // 返回的是可迭代对象
+                    return generatorObject;
+                }
+            }
+            // wrapped其实是里面的匿名函数
+            const wrapped = wrapper(function* () {
+                console.log(`first input ${yield}`);
+                return 'done';
+            })
+            // console.log(wrapped().next('hello'))
+        }
+
+        /* for of 循环 */
+        /* for of可以自动遍历Generator函数生成的Iterator对象,而且不需要执行next方法 */
+        {
+            function* foo() {
+                yield 1
+                yield 2
+                yield 3
+                yield 4
+                return 5
+            }
+            a = foo()
+            // console.log(a.next())//{value: 1, done: false}
+            // console.log(a.next())//{value: 2, done: false}
+            // console.log(a.next())//{value: 3, done: false}
+            // console.log(a.next())//{value: 4, done: false}
+            /*   // 下面done会变为true 就停止执行 */
+            // console.log(a.next())//{value: 5, done: true}
+            for (const i of foo()) {
+                // console.log(i)
+                //1 2 3 4
+            }
+        }
+        /* 一旦next方法返回的对象的done属性为true,for of的循环就会终止,而且不返回该对象,所以上面的return的6不在范围内 */
+        /* generator函数 + for of实现斐波那契数列 */
+        {
+            function* fibonacci() {
+                let [prev, curr] = [0, 1]
+                let count = 0;//轮数
+                for (; ;) {
+                    count++
+                    yield { curr, count };
+                    [prev, curr] = [curr, curr + prev]
+                }
+            }
+            for (let n of fibonacci()) {
+                if (n.curr > 14) break;
+                // console.log(n);
+            }
+        }
+        /* 利用for of循环,可以写出任意对象object的方法,原生的对象没有便利借口,无法使用for of循环.通过generator函数为其增加接口 */
+        {
+            function* objectEntries(obj) {
+                // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys
+                let propsKeys = Reflect.ownKeys(obj);
+                for (const propKey of propsKeys) {
+                    yield [propsKeys, obj[propsKeys]]
+                }
+            }
+            let jane = {
+                first: 'Jane',
+                last: 'Doe'
+            }
+            for (const [key, value] of objectEntries(jane)) {
+                // console.log(key, value)
+            }
+            /* 加上遍历器接口的另一种写法是,将Generator函数加到对象的Symbol.Iterator属性上面 */
+        }
+        {
+            function* objectEntries() {
+                let propKeys = Object.keys(this)
+                for (const propKey of propKeys) {
+                    yield [propKey, this[propKey]]
+                }
+            }
+            let jane = {
+                first: 'Jane',
+                last: 'Doe'
+            }
+            jane[Symbol.iterator] = objectEntries;
+            for (const [key, value] of jane) {
+                // console.log(key, value)
+            }
+        }
+        /* 除了for...of循环,扩展运算符...,解构赋值,Array.from方法内部调用,都是遍历器接口.=>他们都可以将generator函数返回的iterator对象作为参数 */
+        {
+            function* numbers() {
+                yield 1
+                yield 2
+                return 3
+                yield 4
+            }
+            /* 拓展运算符 */
+            // console.log([...numbers()])//[1, 2]
+            /* array.from */
+            // console.log(Array.from(numbers())) //[1,2]
+            /* 解构赋值 */
+            let [x,y]=numbers()
+            // console.log(x,y) // 1 2
+            /* for of */
+            for (const n of numbers()) {
+                // console.log(n) // 1 2 
+            }
+        }
+
+
+        /* Generator.prototype.throw() */
 
     </script>
 </body>
