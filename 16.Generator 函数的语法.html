@@ -472,7 +472,7 @@
                 //TypeError: x.toUpperCase is not a function
             }
         }
-        /* 如果generator过程中跑出了错误,并且没有被内部捕获,就不会再执行下去了.如果此后还调用next方法,将返回一个 {value:undefined,done:true}.js引擎默认认为generator已经结束 */
+        /* 如果generator过程中拋出了错误,并且没有被内部捕获,就不会再执行下去了.如果此后还调用next方法,将返回一个 {value:undefined,done:true}.js引擎默认认为generator已经结束 */
         {
             function* g() {
                 yield 1
@@ -509,6 +509,79 @@
             /* 执行三次next方法,第二次抛出错误,返回undefined true.结束generator */
         }
 
+        /* generator.prototype.return() */
+        /* generator函数返回的遍历器对象,还有一个return方法,可以返回给定的值,并且结束generator函数 */
+        {
+            function* gen() {
+                yield 1;
+                yield 2;
+                yield 3;
+            }
+            var g = gen();
+            // console.log(g.next()) // {value:1,done:false}
+            // console.log(g.return()) // {value:undefined,done:true}
+            // console.log(g.return(6)) // {value:6,done:true}
+            // console.log(g.next()) // {value:undefined,done:true}
+            /* return 不提供参数的话就返回undefined,而且后续的done都是true */
+        }
+        /* 如果Generator内部函数有try...finally代码块,namereturn方法会推迟到finally代码块再执行 */
+        {
+            function* numbers() {
+                yield 1
+                try {
+                    yield 2
+                    yield 3
+                } finally {
+                    yield 4
+                    yield 5
+                }
+                yield 6
+            }
+            var g = numbers();
+            // console.log(g.next()) //{value:1,done:false}
+            // console.log(g.next())//{value:2,done:false}
+            // console.log(g.return(7))//{value:4,done:false}
+            // console.log(g.next())//{value:5,done:false}
+            // console.log(g.next())//{value:7,done:true}
+            /* 上述代码中,调用return方法后,就开始执行finally代码块,然后等到finally代码块执行完成再执行return方法 */
+        }
+
+        /* next throw return的共同点 */
+        /* 这三个方法本质上是同一件事,作用都是让Generator函数恢复执行,并且使用不同的语句替换掉yield表达式 */
+        /* next是将yield表达式替换成一个值 */
+        {
+            const g = function* (x, y) {
+                let result = yield x + y
+                return result
+            }
+            const gen = g(1, 2)
+            // console.log(gen.next()) // {value: 3, done: false}
+            // console.log(gen.next(1)) // {value: 1, done: true}
+        }
+        /* throw就是将yield表达式替换成了一个throw语句 */
+        {
+            {
+                const g = function* (x, y) {
+                    let result = yield x + y
+                    return result
+                }
+                const gen = g(1, 2)
+                // gen.throw(new Error('出错了'))//Uncaught Error: 出错了
+                /* 相当于:将let ressult=yield x+y 替换成let result=new Error('出错了') */
+            }
+        }
+        /* return是将yield表达式替换成一个throw语句 */
+        {
+            const g = function* (x, y) {
+                let result = yield x + y
+                return result
+            }
+            const gen = g(1, 2)
+            // console.log(gen.return(12)) // {value: 12, done: true}
+            /* 相当于将let result=yield x+y =>替换成let result=return 2  */
+        }
+
+        /* yield* 表达式 */
     </script>
 </body>
 
